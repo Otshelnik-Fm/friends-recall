@@ -1,0 +1,116 @@
+.frnd_disabled {
+    pointer-events: none;
+    text-decoration: line-through;
+}
+#frnd_mess_box > div {
+    border-left: 3px solid orange;
+    box-shadow: 2px 2px 5px -5px #000;
+    display: inline-block;
+    line-height: normal;
+    margin: 6px 0 12px;
+    padding: 6px 12px;
+}
+.frnd_title {
+    color: #2e8b57;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0 0 6px;
+}
+.userlist.rows-list .userlist_cntr .user-content-rcl .frnd_actions_bttn {
+    display: inline-flex;
+    padding: 0 6px 0 0;
+}
+
+/*modal*/
+.frnd_modal #ssi-modalWindow {
+    border-radius: 2px;
+}
+.frnd_modal #ssi-modalTitle {
+    border-bottom-color: transparent;
+    padding: 12px 18px;
+}
+.frnd_modal .ssi-closeIcon::before {
+    content: "×";
+    font-size: 46px;
+    color: #d41111;
+    opacity: .6;
+}
+.frnd_modal .ssi-closeIcon:hover::before {
+    opacity: 1;
+}
+.frnd_modal .ssi-closeIcon::after {
+    content: "";
+    display: none;
+}
+.frnd_modal .ssi-modalContent {
+    padding: 6px 12px 0;
+}
+.frnd_modal div.submit-box {
+    background-color: transparent;
+    padding: 0;
+}
+.frnd_modal .rcl-field-input textarea:focus {
+    border-color: #9ed0e1 !important;
+}
+/*END*/
+
+/* notice */
+.frnd_notify {
+    box-sizing: border-box;
+    font-size: 16px;
+    line-height: 1.4;
+    margin: 5px 0;
+    overflow: hidden;
+    padding: 12px 36px;
+    position: relative;
+}
+.frnd_info {
+    background-color: #fff5ce;
+    color: #736d3a;
+}
+.frnd_info.frnd_border {
+    border: 1px solid #efe5be;
+}
+.frnd_success {
+    background-color: #e0f8c9;
+    color: #457b3f;
+}
+.frnd_success.frnd_border {
+    border: 1px solid #d0e8b9;
+}
+.frnd_warning {
+    background-color: #ffe0df;
+    color: #a94953;
+}
+.frnd_warning.frnd_border {
+    border: 1px solid #efcfd3;
+}
+.frnd_simple {
+    background-color: #eee;
+    color: #555;
+}
+.frnd_simple.frnd_border {
+    border: 1px solid #ddd;
+}
+.frnd_notify .rcli {
+    color: rgba(0, 0, 0, 0.08);
+    font-size: 52px;
+    left: -10px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.frnd_notify_text {
+    text-align: center;
+}
+.frnd_notify_text > p {
+    margin: 0;
+    padding: 0;
+}
+.frnd_notify_header {
+    color: currentColor;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin: 0 0 5px 5px;
+}
+/* END */
