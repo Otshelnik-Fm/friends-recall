@@ -181,6 +181,20 @@ function frnd_user_friend_count( $user_id ) {
     return $count;
 }
 
+// друзья по ID
+function frnd_friend_by_id_db( $user_id ) {
+    global $wpdb;
+
+    $ids = $wpdb->get_col( $wpdb->prepare(
+            "SELECT owner_id "
+            . "FROM " . FRND_DB . " "
+            . "WHERE friend_id = %d AND status = 2 "
+            . "LIMIT 0,10000", $user_id
+        ) );
+
+    return $ids;
+}
+
 // подписан ли юзер
 function frnd_is_feed( $from, $to_user ) {
     global $wpdb;
@@ -205,4 +219,47 @@ function frnd_sign_it_feed( $from, $to_user ) {
 
         rcl_insert_feed_data( $args );
     }
+}
+
+// кто онлайн
+/*
+  Array
+  (
+  [0] => Array
+  (
+  [ID] => 1
+  [display_name] => Анжелика
+  [user_nicename] => otshelnik-fm
+  [user_email] => otshelnik-fm@yandex.ru
+  [meta_value] => http://test-recall.otshelnik-fm.ru/wp-content/uploads/rcl-uploads/avatars/1.jpg
+  [time_action] => 2019-07-10 13:44:56
+  )
+
+  )
+ */
+function frnd_online_friends_db() {
+    global $wpdb, $user_ID;
+
+    $ids = frnd_friend_by_id_db( $user_ID );
+
+    if ( ! $ids )
+        return;
+
+    $separated_id = implode( ",", $ids );
+
+    $datas = $wpdb->get_results( "
+            SELECT wp_users.ID,wp_users.display_name,wp_users.user_nicename,user_email,meta_value,actions.time_action
+            FROM " . $wpdb->users . " AS wp_users
+            LEFT JOIN " . $wpdb->prefix . "rcl_user_action AS actions
+            ON wp_users.ID = actions.user
+            LEFT JOIN " . $wpdb->usermeta . " AS t_meta
+            ON wp_users.ID=t_meta.user_id
+            AND meta_key IN ('rcl_avatar', 'ulogin_photo')
+            WHERE actions.time_action > date_sub('" . current_time( 'mysql' ) . "', interval 10 minute)
+            AND wp_users.ID IN (" . $separated_id . ")
+            ORDER BY actions.time_action DESC
+            LIMIT 0,10
+        ", ARRAY_A );
+
+    return $datas;
 }

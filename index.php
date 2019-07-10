@@ -8,7 +8,28 @@
 
  */
 
-// БД
+/** @todo
+
+  Возможности:
+
+  +  Добавить в друзья
+  +  Комментарий к заявке в друзья
+  +  Удалить из друзей
+  +  Забанить
+  +  Список заявок в друзья
+  +  Список друзей и кто онлайн
+  -  Интеграция с FEED
+
+  -  Ситуация:
+  Есть Олег и Маша. Олег подает запрос в друзья. Маша отказывает. В итоге:
+  - У Олега пропадает кнопка Добавить в друзья, он становится подписчиком Маши.
+  - У Маши также пропадает кнопка Добавить в друзья в профиле Олега.
+
+  Предположим, что Маша передумала (погорячилась) и решила добавить Олега в друзья.
+  Но как? Ни тот, ни другой пользователь не могут теперь подать запрос.
+
+ */
+/* БД */
 add_action( 'init', 'frnd_define_constant', 5 );
 function frnd_define_constant() {
     if ( defined( 'FRND_DB' ) )
@@ -25,6 +46,7 @@ require_once 'inc/db.php';
 require_once 'inc/tabs.php';
 require_once 'inc/mails.php';
 require_once 'inc/settings.php';
+require_once 'inc/shortcodes.php';
 require_once 'inc/top-messages.php';
 require_once 'inc/ajax-actions.php';
 
@@ -37,8 +59,20 @@ function frnd_load_style() {
     rcl_enqueue_style( 'frnd_style', rcl_addon_url( 'assets/css/friends.css', __FILE__ ) );
 }
 
+add_action( 'rcl_enqueue_scripts', 'frnd_load_style_card' );
+function frnd_load_style_card() {
+    if ( ! rcl_is_office() )
+        return;
+
+    if ( rcl_get_option( 'frnd_type', 'rows' ) === 'frnd-cards' ) {
+        rcl_enqueue_style( 'frnd_card', rcl_addon_url( 'assets/css/friends-card.css', __FILE__ ) );
+    } else if ( rcl_get_option( 'frnd_type', 'rows' ) === 'frnd-mini' ) {
+        rcl_enqueue_style( 'frnd_mini', rcl_addon_url( 'assets/css/friends-mini.css', __FILE__ ) );
+    }
+}
+
 // вкладка Добавить в друзья сверху ЛК
-add_action( 'rcl_area_actions', 'frnd_get_actions_cabinet', 100 );
+add_action( 'rcl_area_actions', 'frnd_get_actions_cabinet', 51 );
 function frnd_get_actions_cabinet() {
     if ( ! is_user_logged_in() )
         return;
@@ -216,7 +250,7 @@ function frnd_notice( $params ) {
     $defaults = [
         'header'  => '',
         'text'    => '',
-        'type'    => 'info',
+        'type'    => 'info', // info, success, warning, simple
         'is_icon' => true,
         'icon'    => '',
         'class'   => '',
@@ -255,4 +289,15 @@ function frnd_notice( $params ) {
     $notice_block .= '</div>';
 
     return $notice_block;
+}
+
+// добавим к блоку автора и к списку пользователей (rows)
+add_action( 'rcl_user_description', 'frnd_add_friends_author_publications', 40 );
+function frnd_add_friends_author_publications() {
+    global $user_ID, $rcl_user;
+
+    if ( ( int ) $rcl_user->ID === ( int ) $user_ID )
+        return;
+
+    frnd_manager_friend( $user_ID, $rcl_user->ID );
 }

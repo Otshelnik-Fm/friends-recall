@@ -53,7 +53,7 @@ function frnd_top_mess_pending() {
     $data = [
         'type'   => 'success',
         'border' => true,
-        'text'   => 'Заявка ожидает рассмотрения',
+        'text'   => 'Заявка в друзья ожидает рассмотрения',
         'icon'   => 'fa-handshake-o',
     ];
 
@@ -80,7 +80,7 @@ function frnd_incoming_top_mess() {
     $data = [
         'type'   => 'success',
         'border' => true,
-        'text'   => 'У вас ' . $frnd_offer_in . ' ' . frnd_decline_friend( $frnd_offer_in, [ 'запрос', 'запроса', 'запросов' ] ) . ' в друзья!',
+        'text'   => 'У вас: <a class="frnd_link rcl-ajax" data-post="' . frnd_ajax_data( 'friends', 'incoming-friends' ) . '" href="?tab=friends&subtab=incoming-friends">' . $frnd_offer_in . ' ' . frnd_decline_friend( $frnd_offer_in, [ 'запрос', 'запроса', 'запросов' ] ) . ' в друзья!</a>',
         'icon'   => 'fa-bell-o',
     ];
 

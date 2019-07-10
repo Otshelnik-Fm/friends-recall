@@ -148,7 +148,7 @@ function frnd_send_operations() {
         if ( ! empty( $result ) ) {
             wp_send_json( array(
                 'status'  => 'ok',
-                'content' => 'Вы удалили друга'
+                'content' => 'Вы успешно удалили из друзей'
             ) );
         } else {
             wp_send_json( array( 'error' => 'Ошибка frnd_304' ) );

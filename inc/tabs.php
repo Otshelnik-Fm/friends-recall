@@ -47,11 +47,11 @@ function frnd_add_incoming_subtab() {
     if ( ! $frnd_offer_in ) {
         $frnd_offer_in = frnd_incoming_friend_count( $user_ID );
     }
-    $frnd_offer_in = ($frnd_offer_in) ? $frnd_offer_in : '';
+    $counter = ($frnd_offer_in) ? ': ' . $frnd_offer_in : '';
 
     $subtab = array(
         'id'       => 'incoming-friends',
-        'name'     => 'Входящие запросы в друзья: ' . $frnd_offer_in,
+        'name'     => 'Входящие запросы в друзья' . $counter,
         'callback' => array(
             'name' => 'frnd_inc_friends_tab'
         )
@@ -80,23 +80,71 @@ function frnd_all_friends_tab() {
     $count = frnd_user_friend_count( $user_LK );
 
     if ( $count ) {
+        // шаблон вывода списка друзей
+        $type = rcl_get_option( 'frnd_type', 'rows' );
         // кнопка "Убрать из друзей"
         if ( rcl_is_office( $user_ID ) ) {
-            add_action( 'rcl_user_description', 'frnd_get_delete_friend', 90 );
+            if ( $type === 'rows' ) {
+                add_action( 'rcl_user_description', 'frnd_get_delete_friend', 90 );
+            } else if ( $type === 'frnd-cards' || $type === 'frnd-mini' ) {
+                add_action( 'frnd_button', 'frnd_get_delete_friend', 90 );
+            }
         }
         // дополним запрос
         add_filter( 'rcl_users_query', 'frnd_query_friend_userlist', 10 );
-        $content .= rcl_get_userlist( array(
-            'template'    => 'rows',
-            'per_page'    => 20,
-            'orderby'     => 'time_action',
-            'filters'     => 0,
-            'search_form' => 0,
-            'data'        => 'rating_total,description,posts_count,comments_count',
-            'add_uri'     => array( 'tab' => 'friends' )
-            ) );
+        if ( $type === 'rows' ) {
+            $content .= rcl_get_userlist( array(
+                'template'    => 'rows',
+                'per_page'    => 20,
+                'orderby'     => 'time_action',
+                'filters'     => 0,
+                'search_form' => 0,
+                'data'        => 'rating_total,description,posts_count,comments_count',
+                'add_uri'     => array( 'tab' => 'friends' )
+                ) );
+        } else if ( $type === 'frnd-cards' ) {
+            $content .= rcl_get_userlist( array(
+                'template'    => 'frnd-cards',
+                'per_page'    => 20,
+                'orderby'     => 'time_action',
+                'filters'     => 0,
+                'search_form' => 0,
+                'data'        => 'rating_total,posts_count,comments_count',
+                'add_uri'     => array( 'tab' => 'friends' )
+                ) );
+        } else if ( $type === 'frnd-mini' ) {
+            $content .= rcl_get_userlist( array(
+                'template'    => 'frnd-mini',
+                'per_page'    => 20,
+                'orderby'     => 'time_action',
+                'filters'     => 0,
+                'search_form' => 0,
+                'data'        => 'rating_total',
+                'add_uri'     => array( 'tab' => 'friends' )
+                ) );
+        }
     } else {
-        $content .= '<p>Нет друзей &nbsp;&nbsp; (｡•́︿•̀｡)</p>';
+        $datas = '';
+        if ( rcl_is_office( $user_ID ) ) {
+            $data = [
+                'type'   => 'info',
+                'border' => true,
+                'text'   => 'У вас пока нет друзей',
+                'icon'   => 'fa-info-circle',
+            ];
+
+            $datas = apply_filters( 'frnd_you_not_friends', $data );
+        } else {
+            $data = [
+                'type'   => 'info',
+                'border' => true,
+                'text'   => 'Пока нет друзей',
+                'icon'   => 'fa-info-circle',
+            ];
+
+            $datas = apply_filters( 'frnd_not_friends', $data );
+        }
+        $content .= frnd_notice( $datas );
     }
 
     return $content;
@@ -111,6 +159,30 @@ function frnd_query_friend_userlist( $query ) {
     $query['where'][] = "friend.status='2'";
 
     return $query;
+}
+
+// переназначим шаблон списка карточкой
+add_filter( 'rcl_template_path', 'frnd_replace_template_card', 10, 2 );
+function frnd_replace_template_card( $path, $templateName ) {
+    if ( $templateName != 'user-frnd-cards.php' )
+        return $path;
+
+    if ( file_exists( RCL_TAKEPATH . 'templates/user-frnd-cards.php' ) )
+        return RCL_TAKEPATH . 'templates/user-frnd-cards.php';
+
+    return rcl_addon_path( __FILE__ ) . 'templates/user-frnd-cards.php';
+}
+
+// переназначим шаблон списка аватарками
+add_filter( 'rcl_template_path', 'frnd_replace_template_mini', 10, 2 );
+function frnd_replace_template_mini( $path, $templateName ) {
+    if ( $templateName != 'user-frnd-mini.php' )
+        return $path;
+
+    if ( file_exists( RCL_TAKEPATH . 'templates/user-frnd-mini.php' ) )
+        return RCL_TAKEPATH . 'templates/user-frnd-mini.php';
+
+    return rcl_addon_path( __FILE__ ) . 'templates/user-frnd-mini.php';
 }
 
 // коллбек вкладки "Входящие запросы в друзья"
@@ -141,7 +213,16 @@ function frnd_inc_friends_tab() {
             'add_uri'     => array( 'tab' => 'friends' )
             ) );
     } else {
-        $content .= '<p>Пока тут пусто &nbsp;&nbsp; ╮(︶︿︶)╭</p>';
+        $data = [
+            'type'   => 'info',
+            'border' => true,
+            'text'   => 'Запросов нет',
+            'icon'   => 'fa-info-circle',
+        ];
+
+        $datas = apply_filters( 'frnd_not_inc_friends', $data );
+
+        $content .= frnd_notice( $datas );
     }
 
 
@@ -218,7 +299,16 @@ function frnd_out_friends_tab() {
             'add_uri'     => array( 'tab' => 'friends' )
             ) );
     } else {
-        $content .= '<p>Пусто &nbsp;&nbsp; (￢_￢)</p>';
+        $data = [
+            'type'   => 'info',
+            'border' => true,
+            'text'   => 'Заявок нет',
+            'icon'   => 'fa-info-circle',
+        ];
+
+        $datas = apply_filters( 'frnd_not_out_friends', $data );
+
+        $content .= frnd_notice( $datas );
     }
 
     return $content;

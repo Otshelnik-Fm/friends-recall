@@ -1,3 +1,6 @@
+.frnd_link {
+    cursor: pointer;
+}
 .frnd_disabled {
     pointer-events: none;
     text-decoration: line-through;
@@ -114,3 +117,6 @@
     margin: 0 0 5px 5px;
 }
 /* END */
+#block_author-rcl .frnd_offer {
+    display: inline-block;
+}
