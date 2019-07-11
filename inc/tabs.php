@@ -86,7 +86,7 @@ function frnd_all_friends_tab() {
         if ( rcl_is_office( $user_ID ) ) {
             if ( $type === 'rows' ) {
                 add_action( 'rcl_user_description', 'frnd_get_delete_friend', 90 );
-            } else if ( $type === 'frnd-cards' || $type === 'frnd-mini' ) {
+            } else if ( $type === 'frnd-card' || $type === 'frnd-mini-card' || $type === 'frnd-ava' ) {
                 add_action( 'frnd_button', 'frnd_get_delete_friend', 90 );
             }
         }
@@ -102,9 +102,9 @@ function frnd_all_friends_tab() {
                 'data'        => 'rating_total,description,posts_count,comments_count',
                 'add_uri'     => array( 'tab' => 'friends' )
                 ) );
-        } else if ( $type === 'frnd-cards' ) {
+        } else if ( $type === 'frnd-card' ) {
             $content .= rcl_get_userlist( array(
-                'template'    => 'frnd-cards',
+                'template'    => 'frnd-card',
                 'per_page'    => 20,
                 'orderby'     => 'time_action',
                 'filters'     => 0,
@@ -112,9 +112,19 @@ function frnd_all_friends_tab() {
                 'data'        => 'rating_total,posts_count,comments_count',
                 'add_uri'     => array( 'tab' => 'friends' )
                 ) );
-        } else if ( $type === 'frnd-mini' ) {
+        } else if ( $type === 'frnd-mini-card' ) {
             $content .= rcl_get_userlist( array(
-                'template'    => 'frnd-mini',
+                'template'    => 'frnd-mini-card',
+                'per_page'    => 20,
+                'orderby'     => 'time_action',
+                'filters'     => 0,
+                'search_form' => 0,
+                'data'        => 'rating_total,posts_count,comments_count',
+                'add_uri'     => array( 'tab' => 'friends' )
+                ) );
+        } else if ( $type === 'frnd-ava' ) {
+            $content .= rcl_get_userlist( array(
+                'template'    => 'frnd-ava',
                 'per_page'    => 20,
                 'orderby'     => 'time_action',
                 'filters'     => 0,
@@ -164,25 +174,37 @@ function frnd_query_friend_userlist( $query ) {
 // переназначим шаблон списка карточкой
 add_filter( 'rcl_template_path', 'frnd_replace_template_card', 10, 2 );
 function frnd_replace_template_card( $path, $templateName ) {
-    if ( $templateName != 'user-frnd-cards.php' )
+    if ( $templateName != 'user-frnd-card.php' )
         return $path;
 
-    if ( file_exists( RCL_TAKEPATH . 'templates/user-frnd-cards.php' ) )
-        return RCL_TAKEPATH . 'templates/user-frnd-cards.php';
+    if ( file_exists( RCL_TAKEPATH . 'templates/user-frnd-card.php' ) )
+        return RCL_TAKEPATH . 'templates/user-frnd-card.php';
 
-    return rcl_addon_path( __FILE__ ) . 'templates/user-frnd-cards.php';
+    return rcl_addon_path( __FILE__ ) . 'templates/user-frnd-card.php';
+}
+
+// переназначим шаблон списка мини карточкой
+add_filter( 'rcl_template_path', 'frnd_replace_template_mini_card', 10, 2 );
+function frnd_replace_template_mini_card( $path, $templateName ) {
+    if ( $templateName != 'user-frnd-mini-card.php' )
+        return $path;
+
+    if ( file_exists( RCL_TAKEPATH . 'templates/user-frnd-mini-card.php' ) )
+        return RCL_TAKEPATH . 'templates/user-frnd-mini-card.php';
+
+    return rcl_addon_path( __FILE__ ) . 'templates/user-frnd-mini-card.php';
 }
 
 // переназначим шаблон списка аватарками
-add_filter( 'rcl_template_path', 'frnd_replace_template_mini', 10, 2 );
-function frnd_replace_template_mini( $path, $templateName ) {
-    if ( $templateName != 'user-frnd-mini.php' )
+add_filter( 'rcl_template_path', 'frnd_replace_template_ava', 10, 2 );
+function frnd_replace_template_ava( $path, $templateName ) {
+    if ( $templateName != 'user-frnd-ava.php' )
         return $path;
 
-    if ( file_exists( RCL_TAKEPATH . 'templates/user-frnd-mini.php' ) )
-        return RCL_TAKEPATH . 'templates/user-frnd-mini.php';
+    if ( file_exists( RCL_TAKEPATH . 'templates/user-frnd-ava.php' ) )
+        return RCL_TAKEPATH . 'templates/user-frnd-ava.php';
 
-    return rcl_addon_path( __FILE__ ) . 'templates/user-frnd-mini.php';
+    return rcl_addon_path( __FILE__ ) . 'templates/user-frnd-ava.php';
 }
 
 // коллбек вкладки "Входящие запросы в друзья"

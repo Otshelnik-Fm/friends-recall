@@ -5,16 +5,37 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 // кто онлайн
 add_shortcode( 'frnd_online', 'frnd_box_online_users' );
-function frnd_box_online_users() {
-    if ( ! is_user_logged_in() )
-        return;
+function frnd_box_online_users( $attr ) {
+    $out = '';
+
+    $atts = shortcode_atts( array(
+        'title'      => 'Друзья на сайте:',
+        'not-online' => '',
+        'guest-text' => '',
+        ), $attr, 'frnd_online' );
+
+    if ( ! is_user_logged_in() ) {
+        if ( ! empty( $atts['guest-text'] ) ) {
+            $out = '<h3>' . $atts['title'] . '</h3>';
+            $out .= $atts['guest-text'];
+        }
+
+        return $out;
+    }
 
     $datas = frnd_online_friends_db();
 
-    if ( ! $datas )
-        return false; // нет никого
+    // нет друзей на сайте
+    if ( ! $datas ) {
+        if ( ! empty( $atts['not-online'] ) ) {
+            $out .= '<h3>' . $atts['title'] . '</h3>';
+            $out .= $atts['not-online'];
+        }
 
-    $out = '<h3>Друзья на сайте:</h3>';
+        return $out;
+    }
+
+    $out .= '<h3>' . $atts['title'] . '</h3>';
     $out .= '<div class="userlist mini-list">';
     foreach ( $datas as $data ) {
         $out .= '<div class="user-single">';

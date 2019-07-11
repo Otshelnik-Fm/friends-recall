@@ -64,10 +64,12 @@ function frnd_load_style_card() {
     if ( ! rcl_is_office() )
         return;
 
-    if ( rcl_get_option( 'frnd_type', 'rows' ) === 'frnd-cards' ) {
+    if ( rcl_get_option( 'frnd_type', 'rows' ) === 'frnd-card' ) {
         rcl_enqueue_style( 'frnd_card', rcl_addon_url( 'assets/css/friends-card.css', __FILE__ ) );
-    } else if ( rcl_get_option( 'frnd_type', 'rows' ) === 'frnd-mini' ) {
-        rcl_enqueue_style( 'frnd_mini', rcl_addon_url( 'assets/css/friends-mini.css', __FILE__ ) );
+    } else if ( rcl_get_option( 'frnd_type', 'rows' ) === 'frnd-mini-card' ) {
+        rcl_enqueue_style( 'frnd_mini_card', rcl_addon_url( 'assets/css/friends-mini-card.css', __FILE__ ) );
+    } else if ( rcl_get_option( 'frnd_type', 'rows' ) === 'frnd-ava' ) {
+        rcl_enqueue_style( 'frnd_ava', rcl_addon_url( 'assets/css/friends-ava.css', __FILE__ ) );
     }
 }
 
@@ -196,7 +198,7 @@ function frnd_delete_friendship_button( $user_id, $to_user ) {
 
 // ожидаем подтверждения. заявка подана
 function frnd_pending_friendship() {
-    echo '<span class="frnd_pending"><a href="#" class="recall-button frnd_disabled"><span>Заявка ожидает рассмотрения</span></a></span>';
+    echo '<span class="frnd_pending"><a href="#" class="recall-button frnd_disabled"><i class="rcli fa-clock-o"></i><span>Заявка ожидает рассмотрения</span></a></span>';
 }
 
 // в друзьях - убрать из друзей

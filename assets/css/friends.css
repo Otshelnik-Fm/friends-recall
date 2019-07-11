@@ -19,9 +19,14 @@
     font-weight: bold;
     margin: 0 0 6px;
 }
+.userlist.rows-list .userlist_cntr .user-content-rcl .frnd_pending,
 .userlist.rows-list .userlist_cntr .user-content-rcl .frnd_actions_bttn {
     display: inline-flex;
     padding: 0 6px 0 0;
+}
+.frnd_pending .recall-button.frnd_disabled {
+    pointer-events: none;
+    background-color: #b8860b;
 }
 
 /*modal*/

@@ -40,7 +40,7 @@ function frnd_admin_settings( $content ) {
                 'title'   => 'Вариант вывода списка друзей в ЛК',
                 'type'    => 'radio',
                 'slug'    => 'frnd_type',
-                'values'  => [ 'rows' => 'Списком', 'frnd-cards' => 'Карточкой', 'frnd-mini' => 'Аватаркой' ],
+                'values'  => [ 'rows' => 'Списком', 'frnd-card' => 'Карточкой', 'frnd-mini-card' => 'Мини карточкой', 'frnd-ava' => 'Аватаркой' ],
                 'default' => 'rows',
                 'help'    => 'В личном кабинете будет выводить список друзей выбранным шаблоном в вкладке "Все друзья".<br><br>По умолчанию: "Списком"',
             ],
