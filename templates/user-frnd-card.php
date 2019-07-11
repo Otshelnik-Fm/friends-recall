@@ -1,11 +1,21 @@
 <?php
+/*  Шаблон дополнения Friends Recall https://codeseller.ru/products/friends-recall/
+  Версия шаблона: v1.0
+  Шаблон вывода списка друзей в вкладке ЛК - "Карточкой"
+  Этот шаблон можно скопировать в папку WP-Recall шаблонов по пути: ваш-сайт/wp-content/wp-recall/templates/
+  - сделать нужные вам правки и изменения и он будет подключаться оттуда
+  Работа с шаблонами описана тут: https://codeseller.ru/?p=11632
+ */
+?>
+<?php
 global $rcl_user, $rcl_users_set;
 // если есть вызов в data атрибута comments_count
 $uc_count = '';
 if ( in_array( 'comments_count', $rcl_users_set->data ) ) {
     $uc_count .= '<div class="u_card_half">Комментариев<br/><span>';
-    $uc_count .= $rcl_user->comments_count;
-    if ( ! isset( $rcl_user->comments_count ) ) {
+    if ( isset( $rcl_user->comments_count ) ) {
+        $uc_count .= $rcl_user->comments_count;
+    } else {
         $uc_count .= '0';
     }
     $uc_count .= '</span></div>';
@@ -14,8 +24,9 @@ if ( in_array( 'comments_count', $rcl_users_set->data ) ) {
 $up_count = '';
 if ( in_array( 'posts_count', $rcl_users_set->data ) ) {
     $up_count .= '<div class="u_card_half">Публикаций<br/><span>';
-    $up_count .= $rcl_user->posts_count;
-    if ( ! isset( $rcl_user->posts_count ) ) {
+    if ( isset( $rcl_user->posts_count ) ) {
+        $up_count .= $rcl_user->posts_count;
+    } else {
         $up_count .= '0';
     }
     $up_count .= '</span></div>';
