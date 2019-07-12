@@ -49,6 +49,7 @@ require_once 'inc/settings.php';
 require_once 'inc/shortcodes.php';
 require_once 'inc/top-messages.php';
 require_once 'inc/ajax-actions.php';
+require_once 'inc/notifications.php';
 
 /**/
 function frnd_load_script() {
