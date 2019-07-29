@@ -18,7 +18,7 @@
   +  Забанить
   +  Список заявок в друзья
   +  Список друзей и кто онлайн
-  -  Интеграция с FEED
+  +  Интеграция с FEED
 
   -  Ситуация:
   Есть Олег и Маша. Олег подает запрос в друзья. Маша отказывает. В итоге:
@@ -44,6 +44,7 @@ function frnd_define_constant() {
 //
 require_once 'inc/db.php';
 require_once 'inc/tabs.php';
+require_once 'inc/feed.php';
 require_once 'inc/mails.php';
 require_once 'inc/settings.php';
 require_once 'inc/shortcodes.php';

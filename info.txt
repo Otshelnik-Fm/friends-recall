@@ -1,5 +1,5 @@
 Name: Friends Recall;
-Version: 0.4;
+Version: 0.5;
 Support Core: 16.17.0;
 Description: Функционал друзей на вашем сайте;
 Author: Владимир Дружаев (Otshelnik-Fm);
