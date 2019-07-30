@@ -45,6 +45,58 @@ function frnd_insert_offer_db( $user_id, $friend ) {
     return $status;
 }
 
+/* проверить - какие связи дружбы */
+function frnd_get_relation_by_id( $user_id, $friend ) {
+    global $wpdb;
+
+    $status = $wpdb->get_results(
+        "SELECT `owner_id`, `friend_id`, `status` "
+        . "FROM " . FRND_DB . " "
+        . "WHERE (owner_id,friend_id) "
+        . "IN ((" . $user_id . "," . $friend . "),(" . $friend . "," . $user_id . "))"
+        . "", ARRAY_A
+    );
+
+    return $status;
+}
+
+// повторый запрос в друзья
+function frnd_update_offer_db( $user_id, $friend ) {
+    global $wpdb;
+
+    $status = false;
+
+    // проверяем связи "кто к кому"
+    $relation = frnd_get_relation_by_id( $user_id, $friend );
+
+    // этот запрос был. Обновим время, статус
+    if ( $relation[0]['owner_id'] == $user_id && $relation[0]['status'] == 3 ) {
+        $data   = array( 'actions_date' => current_time( 'mysql' ), 'status' => 1 );
+        $where  = array( 'owner_id' => $user_id, 'friend_id' => $friend );
+        $format = array( '%s', '%d' );
+
+        $status = $wpdb->update(
+            FRND_DB, $data, $where, $format
+        );
+    }
+    // а это обратный запрос
+    else if ( $relation[0]['friend_id'] == $user_id && $relation[0]['status'] == 3 ) {
+        $data   = array( 'owner_id' => $user_id, 'friend_id' => $friend, 'actions_date' => current_time( 'mysql' ), 'status' => 1 );
+        $where  = array( 'owner_id' => $friend, 'friend_id' => $user_id );
+        $format = array( '%d', '%d', '%s', '%d' );
+
+        $status = $wpdb->update(
+            FRND_DB, $data, $where, $format
+        );
+    }
+
+    if ( isset( $status ) && $status > 0 ) {
+        do_action( 'frnd_offer', $user_id, $friend );
+    }
+
+    return $status;
+}
+
 // текст запроса в друзья
 function frnd_insert_offer_message_db( $user_id, $friend, $mess ) {
     global $wpdb;
@@ -202,23 +254,6 @@ function frnd_is_feed( $from, $to_user ) {
     $count = $wpdb->get_var( "SELECT COUNT(feed_id) FROM " . RCL_PREF . "feeds WHERE user_id={$to_user} AND object_id={$from}" );
 
     return $count;
-}
-
-// проверим подписку и подпишем
-function frnd_sign_it_feed( $from, $to_user ) {
-    $subs = frnd_is_feed( $from, $to_user );
-
-    if ( ! $subs || $subs == 0 ) {
-
-        $args = array(
-            'user_id'     => $to_user,
-            'object_id'   => $from,
-            'feed_type'   => 'author',
-            'feed_status' => 1
-        );
-
-        rcl_insert_feed_data( $args );
-    }
 }
 
 // кто онлайн

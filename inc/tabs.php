@@ -34,7 +34,7 @@ function frnd_friends_tab() {
     rcl_tab( $tab_data );
 }
 
-// подвкладки "Заявки в друзья:"
+// подвкладки "Входящие запросы в друзья"
 add_action( 'rcl_setup_tabs', 'frnd_add_incoming_subtab', 10 );
 function frnd_add_incoming_subtab() {
     global $user_ID;
@@ -296,7 +296,7 @@ function frnd_messages() {
     echo frnd_get_messages();
 }
 
-// вкладка "Заявки в друзья: исходящие"
+// вкладка "Входящие запросы в друзья"
 function frnd_out_friends_tab() {
     $content = '<h3>Вы подали заявки:</h3>';
 

@@ -81,6 +81,21 @@ function frnd_save_offer_form() {
                 'dialog'  => [ 'close' => true ],
             ] );
         }
+        // В подписчиках но просит снова дружбу
+        else if ( isset( $status ) && $status == 3 ) {
+            // впишем в БД запрос
+            frnd_update_offer_db( $from, $to );
+
+            if ( isset( $mess ) && ! empty( $mess ) ) {
+                frnd_insert_offer_message_db( $from, $to, $mess );
+            }
+
+            wp_send_json( [
+                'success' => 'Запрос отправлен',
+                'reload'  => true,
+                'dialog'  => [ 'close' => true ],
+            ] );
+        }
         // появилась какая-то связь. Обновим страницу
         else {
             wp_send_json( [

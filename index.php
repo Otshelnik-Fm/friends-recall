@@ -210,7 +210,7 @@ function frnd_accepted_friendship( $user_id, $to_user ) {
 
 // отклонён. подписчик
 function frnd_declined_friendship( $user_id, $to_user ) {
-
+    echo frnd_offer_friendship_button( $user_id, $to_user );
 }
 
 // заблокирован. бан
