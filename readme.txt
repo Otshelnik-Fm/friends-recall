@@ -15,16 +15,61 @@
 
 
 == Настройки ==
+В админке имеется блок настроек: "WP-Recall" -> "Настройки" -> "Настройки Friends Recall"
+
+Если вы используете дополнение FEED - то возможно "Подписывать при отказе в дружбе" и "Подписывать при удалении из друзей"
+
+Имеется 4-ре варианта вывода списка друзей в ЛК: Списком, Карточкой, Мини карточкой, Аватаркой
+
+И опция "Включать уведомления сайта"
+
+<hr>
+
+Имеется шорткод [frnd_online] - "друзья в сети"
+- выводит друзей, которые были активны на сайте в течении последних 10-ти минут (активность WP-Recall). 
+Сортировка по времени активности.
+
+атрибуты шорткода:
+<strong>title</strong> - заголовок виджета (по умолчанию "Друзья на сайте:")
+<strong>not-online</strong> - сообщение когда друзей нет в сети (если не указать то блок "Друзья на сайте:" не выводится если никого нет в сети)
+<strong>guest-text</strong> - сообщение выводимое незалогиненному пользователю (если не указать то блок "Друзья на сайте:" не выводится для гостей)
+
+Пример:
+<code>[frnd_online guest-text="Войдите на сайт и добавьте в друзья" not-online="Никого нет"]</code>
 
 
+== Благодарности ==
 
+Дополнение "Друзья" вышло в рамках <a href="https://codeseller.ru/project/dopolnenie-k-plaginu-wp-recall-druzya/">"Проектов"</a> сервиса CodeSeller.ru. Минимальный взнос участника составил: 200р.
+Без финансовой помощи наших друзей - спонсоров данного проекта, мы бы не продвинулись в реализации. Спасибо им за финансовую помощь, поддержку и тестирование!
 
-== FAQ ==
+<strong>Спонсорами выступили:</strong>
+[userlist template="mini" include="18914,19799,7692,19928,19544,1,5677,10241,6552,4462,17501,6814,18438"]
 
+<a href="https://codeseller.ru/author/cereal007yandex-ru/">Александр</a> - 2000р.
+<a href="https://codeseller.ru/author/grigorash37/">grigorash37</a> - 900р.
+<a href="https://codeseller.ru/author/oldisbizgmail-com/">Sergio</a> - 700р.
+<a href="https://codeseller.ru/author/samurhan/">Samurhan</a> - 500р.
+<a href="https://codeseller.ru/author/photobalbes/">Photobalbes</a> - 300р.
+<a href="https://codeseller.ru/author/admin/">Андрей CS</a> - 200р.
+<a href="https://codeseller.ru/author/roman201315/">Roman</a> - 200р.
+<a href="https://codeseller.ru/author/pbv66/">pbv66</a> - 200р.
+<a href="https://codeseller.ru/author/aspirinka/">Максим</a> - 200р.
+<a href="https://codeseller.ru/author/ulogin_vkontakte_249199347/">Шурик Шниперсон</a> - 200р.
+<a href="https://codeseller.ru/author/litbesinbox-ru/">Litbes</a> - 200р.
+<a href="https://codeseller.ru/author/liter-rm/">Liter-rm</a> - 200р.
+<a href="https://codeseller.ru/author/denis-bitcoinauto/">Denis.BitcoinAuto</a> - 200р.
+
+- вот так, команда из 13-ти человек помогла воплотить мечту многих пользователей. С помощью данного бесплатного дополнения они вывели WP-Recall на еще один уровень выше!
 
 
 
 == Changelog ==
+= 2019-07-30 =
+v1.0
+* Релиз
+
+
 = 2019-07-30 =
 v0.6
 * кнопка "Добавить в друзья" теперь выводится у тех кого отправили в подписчики и у того на кого он подписан
@@ -117,4 +162,4 @@ v0.1
 * При возникновении проблемы, создайте соотвествующую тему на форуме поддержки товара
 * Если вам нужна доработка под ваши нужды - вы можете обратиться ко мне в <a href="https://codeseller.ru/author/otshelnik-fm/?tab=chat" target="_blank">ЛС</a> с техзаданием на платную доработку.
 
-Все мои работы опубликованы <a href="https://otshelnik-fm.ru/?p=2562" target="_blank">на моём сайте</a> и в каталоге магазина <a href="https://codeseller.ru/author/otshelnik-fm/?tab=publics&subtab=type-products" target="_blank">CodeSeller.ru</a>
+Все мои работы опубликованы <a href="https://otshelnik-fm.ru/?p=2562&utm_source=free-addons&utm_medium=addon-description&utm_campaign=friends-recall&utm_content=codeseller.ru&utm_term=all-my-addons" target="_blank">на моём сайте</a> и в каталоге магазина <a href="https://codeseller.ru/author/otshelnik-fm/?tab=publics&subtab=type-products" target="_blank">CodeSeller.ru</a>
