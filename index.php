@@ -290,6 +290,9 @@ function frnd_notice( $params ) {
 // добавим к блоку автора и к списку пользователей (rows)
 add_action( 'rcl_user_description', 'frnd_add_friends_author_publications', 40 );
 function frnd_add_friends_author_publications() {
+    if ( rcl_is_office() || is_singular( 'page' ) )
+        return;
+
     global $user_ID, $rcl_user;
 
     if ( ( int ) $rcl_user->ID === ( int ) $user_ID )
