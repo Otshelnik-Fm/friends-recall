@@ -34,7 +34,7 @@ function frnd_top_messages() {
     global $user_LK, $frnd_status;
 
     if ( ! $frnd_status ) {
-        $frnd_status = frnd_get_friend_by_id( $user_ID, $user_LK );
+        $frnd_status = frnd_get_friendship_status_code( $user_ID, $user_LK );
 
         if ( ! $frnd_status )
             return;

@@ -64,7 +64,7 @@ function frnd_save_offer_form() {
 
     if ( ( int ) $user_ID === $from ) {
         // получим еще раз статус, возможно race condition
-        $status = frnd_get_friend_by_id( $from, $to );
+        $status = frnd_get_friendship_status_code( $from, $to );
 
         // всё еще нет никаких связей
         if ( ! isset( $status ) ) {

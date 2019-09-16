@@ -39,6 +39,7 @@ require_once 'inc/tabs.php';
 require_once 'inc/feed.php';
 require_once 'inc/mails.php';
 require_once 'inc/settings.php';
+require_once 'inc/functions.php';
 require_once 'inc/shortcodes.php';
 require_once 'inc/top-messages.php';
 require_once 'inc/ajax-actions.php';
@@ -100,7 +101,7 @@ function frnd_manager_friend( $user_id, $to_user ) {
     global $frnd_status;
 
     if ( ! $frnd_status ) {
-        $frnd_status = frnd_get_friend_by_id( $user_id, $to_user );
+        $frnd_status = frnd_get_friendship_status_code( $user_id, $to_user );
     }
 
     if ( ! isset( $frnd_status ) && ! rcl_is_office( $user_id ) ) {

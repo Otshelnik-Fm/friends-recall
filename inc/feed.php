@@ -29,7 +29,7 @@ function frnd_add_feed( $args ) {
 
     global $user_ID;
 
-    $friends_id = frnd_friend_by_id_db( $user_ID );
+    $friends_id = frnd_get_friend_user_ids( $user_ID );
 
     if ( ! $friends_id )
         return $args;

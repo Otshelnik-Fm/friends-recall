@@ -11,15 +11,13 @@ function frnd_friends_tab() {
 
     $count = frnd_user_friend_count( $user_LK );
 
-    $friend = ($count) ? $count : '0';
-
     $tab_data = array(
         'id'       => 'friends',
-        'name'     => frnd_decline_friend( $friend, [ 'Друг', 'Друга', 'Друзей' ] ),
+        'name'     => frnd_decline_friend( $count, [ 'Друг', 'Друга', 'Друзей' ] ),
         'supports' => array( 'ajax' ),
         'public'   => 1,
         'output'   => 'counters',
-        'counter'  => $friend,
+        'counter'  => $count,
         'content'  => array(
             array(
                 'id'       => 'all-friends',
@@ -79,7 +77,7 @@ function frnd_all_friends_tab() {
 
     $count = frnd_user_friend_count( $user_LK );
 
-    if ( $count ) {
+    if ( $count && $count > 0 ) {
         // шаблон вывода списка друзей
         $type = rcl_get_option( 'frnd_type', 'rows' );
         // кнопка "Убрать из друзей"
