@@ -4,26 +4,52 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
+add_filter( 'rcl_tabs', 'frnd_decline_tab' );
+function frnd_decline_tab( $tabs ) {
+    if ( rcl_get_option( 'frnd_place', 'counters' ) === 'menu' )
+        return $tabs;
+
+    // если это F-Chat - не меняем ничего
+    if ( isset( $tabs['friends'] ) && $tabs['friends']['name'] === 'Друзья' ) {
+        $tabs['friends']['name'] = frnd_decline_friend( $tabs['friends']['counter'], [ 'Друг', 'Друга', 'Друзей' ] );
+    }
+
+    return $tabs;
+}
+
 // вкладка Друзья
 add_action( 'init', 'frnd_friends_tab' );
 function frnd_friends_tab() {
-    global $user_LK;
+    global $rcl_office, $user_ID;
 
-    $count = frnd_user_friend_count( $user_LK );
+    $place = rcl_get_option( 'frnd_place', 'counters' );
+
+    $count = 0;
+
+    if ( $rcl_office > 0 ) {
+        // если это кабинет залогиненого
+        if ( $rcl_office == $user_ID ) {
+            $count = frnd_count_current_user_friends();
+        } else {
+            $count = frnd_count_lk_friends();
+        }
+    }
 
     $tab_data = array(
         'id'       => 'friends',
-        'name'     => frnd_decline_friend( $count, [ 'Друг', 'Друга', 'Друзей' ] ),
+        'name'     => 'Друзья',
         'supports' => array( 'ajax' ),
         'public'   => 1,
-        'output'   => 'counters',
+        'output'   => $place,
         'counter'  => $count,
+        'icon'     => 'fa-handshake-o',
         'content'  => array(
             array(
                 'id'       => 'all-friends',
                 'name'     => 'Все друзья',
                 'callback' => array(
-                    'name' => 'frnd_all_friends_tab'
+                    'name' => 'frnd_all_friends_tab',
+                    'args' => array( $count )
                 )
             ),
         )
@@ -40,12 +66,9 @@ function frnd_add_incoming_subtab() {
     if ( ! rcl_is_office( $user_ID ) )
         return;
 
-    global $frnd_offer_in;
+    $offer_in = frnd_count_incoming_friend_requests_lk();
 
-    if ( ! $frnd_offer_in ) {
-        $frnd_offer_in = frnd_incoming_friend_count( $user_ID );
-    }
-    $counter = ($frnd_offer_in) ? ': ' . $frnd_offer_in : '';
+    $counter = ($offer_in) ? ': ' . $offer_in : '';
 
     $subtab = array(
         'id'       => 'incoming-friends',
@@ -70,16 +93,17 @@ function frnd_add_incoming_subtab() {
 }
 
 // коллбек вкладки Друзья
-function frnd_all_friends_tab() {
+function frnd_all_friends_tab( $count ) {
+    if ( ! rcl_is_office() )
+        return;
+
     $content = '<h3>Список друзей:</h3>';
 
-    global $user_LK, $user_ID;
-
-    $count = frnd_user_friend_count( $user_LK );
+    global $user_ID;
 
     if ( $count && $count > 0 ) {
         // шаблон вывода списка друзей
-        $type = rcl_get_option( 'frnd_type', 'rows' );
+        $type = rcl_get_option( 'frnd_type', 'frnd-mini-card' );
         // кнопка "Убрать из друзей"
         if ( rcl_is_office( $user_ID ) ) {
             if ( $type === 'rows' ) {
@@ -144,10 +168,8 @@ function frnd_all_friends_tab() {
             $datas = apply_filters( 'frnd_you_not_friends', $data );
         } else {
             $data = [
-                'type'   => 'info',
-                'border' => true,
-                'text'   => 'Пока нет друзей',
-                'icon'   => 'fa-info-circle',
+                'text' => 'Пока нет друзей',
+                'icon' => 'fa-info-circle',
             ];
 
             $datas = apply_filters( 'frnd_not_friends', $data );
@@ -209,13 +231,9 @@ function frnd_replace_template_ava( $path, $templateName ) {
 function frnd_inc_friends_tab() {
     $content = '<h3>Входящие запросы в друзья:</h3>';
 
-    global $user_LK, $frnd_offer_in;
+    $offer_in = frnd_count_incoming_friend_requests_lk();
 
-    if ( ! $frnd_offer_in ) {
-        $frnd_offer_in = frnd_incoming_friend_count( $user_LK );
-    }
-
-    if ( $frnd_offer_in ) {
+    if ( $offer_in ) {
         // текст сообщения к дружбе
         add_action( 'rcl_user_description', 'frnd_messages', 90 );
 
@@ -234,10 +252,8 @@ function frnd_inc_friends_tab() {
             ) );
     } else {
         $data = [
-            'type'   => 'info',
-            'border' => true,
-            'text'   => 'Запросов нет',
-            'icon'   => 'fa-info-circle',
+            'text' => 'Запросов нет',
+            'icon' => 'fa-info-circle',
         ];
 
         $datas = apply_filters( 'frnd_not_inc_friends', $data );
@@ -278,7 +294,7 @@ function frnd_get_delete_friend() {
 function frnd_get_messages() {
     global $rcl_user, $user_ID;
 
-    $messages = frnd_get_messages_db( $rcl_user->ID, $user_ID );
+    $messages = frnd_get_friend_request_message( $rcl_user->ID, $user_ID );
 
     if ( ! $messages )
         return;
@@ -300,7 +316,7 @@ function frnd_out_friends_tab() {
 
     global $user_LK;
 
-    $frnd_offer_out = frnd_outcoming_friend_count( $user_LK );
+    $frnd_offer_out = frnd_count_outgoing_friend_requests( $user_LK );
 
     if ( $frnd_offer_out ) {
         // текст сообщения к дружбе
@@ -320,10 +336,8 @@ function frnd_out_friends_tab() {
             ) );
     } else {
         $data = [
-            'type'   => 'info',
-            'border' => true,
-            'text'   => 'Заявок нет',
-            'icon'   => 'fa-info-circle',
+            'text' => 'Заявок нет',
+            'icon' => 'fa-info-circle',
         ];
 
         $datas = apply_filters( 'frnd_not_out_friends', $data );

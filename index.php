@@ -9,64 +9,71 @@
  */
 
 /** @todo
-
-  Возможности:
-
-  +  Добавить в друзья
-  +  Комментарий к заявке в друзья
-  +  Удалить из друзей
-  +  Забанить
-  +  Список заявок в друзья
-  +  Список друзей и кто онлайн
-  +  Интеграция с FEED
+  -  Функционал блокирования - бана. Кнопка "Черный список"
+  -  кнопка "блок действий" - как в Group Theme Replace. Чтобы видеть инфу и в выпадающем меню были кнопки
 
  */
-/* БД */
-add_action( 'init', 'frnd_define_constant', 5 );
-function frnd_define_constant() {
-    if ( defined( 'FRND_DB' ) )
-        return false;
+/**/
 
-    global $wpdb;
+// Константа FRND_ADDON_FILE.
+if ( ! defined( 'FRND_ADDON_FILE' ) ) {
+    define( 'FRND_ADDON_FILE', __FILE__ );
+}
 
-    define( 'FRND_DB', $wpdb->base_prefix . 'otfm_friends' );
-    define( 'FRND_MESS_DB', $wpdb->base_prefix . 'otfm_friends_messages' );
+// Подключим FriendsRecall класс.
+if ( ! class_exists( 'FriendsRecall' ) ) {
+    include_once dirname( __FILE__ ) . '/classes/class-friends-recall.php';
+}
+
+/**/
+/**
+ * Экземпляр класса FriendsRecall
+ *
+ * @since  2.0
+ * @return FriendsRecall
+ */
+function frnd_base() {
+    return FriendsRecall::instance();
+}
+
+add_action( 'init', 'frnd_init', 1 );
+function frnd_init() {
+    return frnd_base();
+}
+
+/**
+ * Экземпляр класса FriendsTopMessages
+ *
+ * @since  2.0
+ * @return FriendsTopMessages
+ */
+add_action( 'rcl_area_before', 'frnd_top_messages', 200 );
+function frnd_top_messages() {
+    if ( ! rcl_is_office() )
+        return;
+
+    if ( ! class_exists( 'FriendsTopMessages' ) ) {
+        include_once FRND_ADDON_ABSPATH . 'classes/class-friends-top-messages.php';
+    }
+
+    return FriendsTopMessages::instance();
 }
 
 //
 require_once 'inc/db.php';
 require_once 'inc/tabs.php';
-require_once 'inc/feed.php';
 require_once 'inc/mails.php';
-require_once 'inc/settings.php';
 require_once 'inc/functions.php';
 require_once 'inc/shortcodes.php';
-require_once 'inc/top-messages.php';
 require_once 'inc/ajax-actions.php';
 require_once 'inc/notifications.php';
+require_once 'inc/future-release.php';
+
+if ( function_exists( 'rcl_insert_feed_data' ) ) {
+    require_once 'inc/feed.php';
+}
 
 /**/
-function frnd_load_script() {
-    rcl_enqueue_script( 'frnd_script', rcl_addon_url( 'assets/js/friends.js', __FILE__ ), false, true );
-}
-
-function frnd_load_style() {
-    rcl_enqueue_style( 'frnd_style', rcl_addon_url( 'assets/css/friends.css', __FILE__ ) );
-}
-
-add_action( 'rcl_enqueue_scripts', 'frnd_load_style_card' );
-function frnd_load_style_card() {
-    if ( ! rcl_is_office() )
-        return;
-
-    if ( rcl_get_option( 'frnd_type', 'rows' ) === 'frnd-card' ) {
-        rcl_enqueue_style( 'frnd_card', rcl_addon_url( 'assets/css/friends-card.css', __FILE__ ) );
-    } else if ( rcl_get_option( 'frnd_type', 'rows' ) === 'frnd-mini-card' ) {
-        rcl_enqueue_style( 'frnd_mini_card', rcl_addon_url( 'assets/css/friends-mini-card.css', __FILE__ ) );
-    } else if ( rcl_get_option( 'frnd_type', 'rows' ) === 'frnd-ava' ) {
-        rcl_enqueue_style( 'frnd_ava', rcl_addon_url( 'assets/css/friends-ava.css', __FILE__ ) );
-    }
-}
 
 // вкладка Добавить в друзья сверху ЛК
 add_action( 'rcl_area_actions', 'frnd_get_actions_cabinet', 51 );
@@ -74,41 +81,107 @@ function frnd_get_actions_cabinet() {
     if ( ! is_user_logged_in() )
         return;
 
-    global $user_ID;
-
-    // если в своем ЛК - проверим и выведем счетчик - кто подал ко мне заявку в друзья
-    if ( rcl_is_office( $user_ID ) ) {
-        echo frnd_incoming_friend_count_box( $user_ID );
-    }
-
-    global $user_LK;
+    global $user_ID, $user_LK;
 
     frnd_manager_friend( $user_ID, $user_LK );
+}
+
+// связи лк или одниночной записи
+function frnd_get_all_site_relations() {
+    $relations = false;
+    // в кабинете
+    if ( rcl_is_office() ) {
+        $relations = frnd_get_relation_friendship_current_user_to_lk();
+    }
+    // одиночная запись и не в друзьях
+    else if ( ( ! rcl_is_office() && ! is_singular( 'page' ) && ! is_front_page() ) || ! frnd_is_friend_post() ) {
+        $relations = frnd_get_relation_friendship_current_user_to_author();
+    }
+
+    return $relations;
+}
+
+// статус лк или одниночной записи
+function frnd_get_all_site_statuses() {
+    $status = false;
+    // в кабинете
+    if ( rcl_is_office() ) {
+        $status = frnd_get_status_friendship_lk_to_current_user();
+    }
+    // одиночная запись и не в друзьях
+    else if ( ( ! rcl_is_office() && ! is_singular( 'page' ) && ! is_front_page() ) || ! frnd_is_friend_post() ) {
+        $status = frnd_get_status_friendship_author_to_current_user();
+    }
+
+    return $status;
 }
 
 //
 //
 //
-//
 //      основной вызов
 function frnd_manager_friend( $user_id, $to_user ) {
-    // ресурсы
-    rcl_dialog_scripts();
-    frnd_load_script();
-    frnd_load_style();
+    // у друга нечего делать
+    if ( ! $user_id || ! $to_user || frnd_is_friend_post() || frnd_is_friend_office() )
+        return;
 
-    // получим статус
-    global $frnd_status;
+    $status = frnd_get_all_site_statuses();
 
-    if ( ! $frnd_status ) {
-        $frnd_status = frnd_get_friendship_status_code( $user_id, $to_user );
+    // $user_id подписчик
+    //if ( isset( $status ) && $status == 3 )
+    //    return;
+
+    $relations = frnd_get_all_site_relations();
+
+    frnd_base()->load_logged_in_style();
+
+    // нет статуса или есть и это не запрос в друзья - нужен скрипт
+    if ( ! $status || $status != 1 ) {
+        frnd_base()->load_logged_in_script();
     }
 
-    if ( ! isset( $frnd_status ) && ! rcl_is_office( $user_id ) ) {
+    // в своем ЛК
+    if ( rcl_is_office( $user_id ) ) {
+        echo frnd_incoming_friend_count_box( $user_id );
+        return;
+    }
+
+    if ( ! $status || $status != 1 ) {
+        // модалка
+        rcl_dialog_scripts();
+    }
+
+    // он уже подал к $user_id
+    if ( isset( $relations[0] ) && $relations[0]['friend_id'] == $user_id && $relations[0]['status'] == 1 ) {
+        if ( ! rcl_is_office() ) {
+            echo frnd_button_in_notice_box( $user_id, $to_user );
+
+            return;
+        } else {
+            // в кабинете. Стопим. т.к. top-message выведет вверху кнопки и сообщение
+            return;
+        }
+    }
+
+    if ( isset( $relations[0] ) && $relations[0]['status'] == 3 && isset( $relations[1] ) && $relations[1]['friend_id'] == $user_id && $relations[1]['status'] == 1 ) {
+        echo frnd_confirm_offer_friendship_button( $user_id, $to_user );
+        echo frnd_reject_offer_friendship_button( $user_id, $to_user );
+
+        return;
+    }
+
+    // запрос дружбы
+    if ( $status == 0 && ! rcl_is_office( $user_id ) ) {
         echo frnd_offer_friendship_button( $user_id, $to_user );
+        return;
     }
 
-    switch ( $frnd_status ) {
+
+    return frnd_get_buttons( $status, $user_id, $to_user );
+}
+
+function frnd_get_buttons( $status, $user_id, $to_user ) {
+    switch ( $status ) {
         // заявка подана
         case 1:
             frnd_pending_friendship( $user_id, $to_user );
@@ -129,6 +202,36 @@ function frnd_manager_friend( $user_id, $to_user ) {
             frnd_blocked_friendship( $user_id, $to_user );
             break;
     }
+}
+
+// в блок автора
+function frnd_button_in_notice_box( $user_id, $to_user ) {
+    frnd_base()->load_core_style();
+
+    $text = frnd_get_friend_request_message( $user_id, $to_user );
+
+    $mess = '<div class="frnd_auth_mess">';
+    $mess .= '<span>' . frnd_get_author_name( $to_user ) . ' хочет добавить вас в друзья. Вы можете принять запрос или отклонить его, кнопками ниже</span>';
+
+    if ( $text ) {
+        $mess .= '<div id="frnd_mess_box" class="frnd_mess_block">'
+            . '<div>'
+            . '<div class="frnd_title">Он оставил вам сообщение:</div>'
+            . '<div class="frnd_mess">' . $text . '</div>'
+            . '</div>'
+            . '</div>';
+    }
+    $mess .= frnd_confirm_offer_friendship_button( $user_id, $to_user );
+    $mess .= frnd_reject_offer_friendship_button( $user_id, $to_user );
+    $mess .= '</div>';
+
+    $data = [
+        'type' => 'success',
+        'text' => $mess,
+        'icon' => 'fa-handshake-o',
+    ];
+
+    return frnd_notice( $data );
 }
 
 // Кнопка - запрос дружбы + модалка для сообщения
@@ -156,7 +259,7 @@ function frnd_confirm_offer_friendship_button( $user_id, $to_user ) {
         'attr' => 'data-frnd_data=' . $data . ' data-frnd_type="confirm" onclick="frnd_operations(this);return false;"'
     ];
 
-    return '<span class="frnd_actions_bttn frnd_offer_confirm">' . rcl_get_button( 'Добавить в друзья', '#', $args ) . '</span>';
+    return '<span class="frnd_actions_bttn frnd_offer_confirm">' . rcl_get_button( 'Принять запрос в друзья', '#', $args ) . '</span>';
 }
 
 // Кнопка - отклоняю дружбу
@@ -172,7 +275,7 @@ function frnd_reject_offer_friendship_button( $user_id, $to_user ) {
         'attr' => 'data-frnd_data=' . $data . ' data-frnd_type="reject" onclick="frnd_operations(this);return false;"'
     ];
 
-    return '<span class="frnd_actions_bttn frnd_offer_reject">' . rcl_get_button( 'Отклонить', '#', $args ) . '</span>';
+    return '<span class="frnd_actions_bttn frnd_offer_reject">' . rcl_get_button( 'Отклонить запрос в друзья', '#', $args ) . '</span>';
 }
 
 // Кнопка - удаляю из друзей
@@ -213,13 +316,13 @@ function frnd_blocked_friendship( $user_id, $to_user ) {
 
 // Кнопка "Запросы в друзья: 1"
 function frnd_incoming_friend_count_box( $user_id ) {
-    global $frnd_offer_in;
+    $offer_in = frnd_count_incoming_friend_requests_lk();
 
-    if ( ! $frnd_offer_in )
+    if ( ! $offer_in )
         return;
 
     return '<div class="frnd_count">'
-        . '<a class="recall-button rcl-ajax" data-post="' . frnd_ajax_data( 'friends', 'incoming-friends' ) . '" href="?tab=friends&subtab=incoming-friends"><span>Запросы в друзья: ' . $frnd_offer_in . '</span></a>'
+        . '<a class="recall-button rcl-ajax" data-post="' . frnd_ajax_data( 'friends', 'incoming-friends' ) . '" href="?tab=friends&subtab=incoming-friends"><span>Запросы в друзья: ' . $offer_in . '</span></a>'
         . '</div>';
 }
 
@@ -236,61 +339,12 @@ function frnd_ajax_data( $tab_id, $subtab ) {
     return rcl_encode_post( $datapost );
 }
 
-// склонения "друг, друга, друзей"
-function frnd_decline_friend( $n, $w = array( '', '', '' ) ) {
-    $x  = ($xx = abs( $n ) % 100) % 10;
-    return $w[($xx > 10 AND $xx < 15 OR ! $x OR $x > 4 AND $x < 10) ? 2 : ($x == 1 ? 0 : 1)];
-}
-
-// future core in 17.0 wp-recall
-function frnd_notice( $params ) {
-    $defaults = [
-        'header'  => '',
-        'text'    => '',
-        'type'    => 'info', // info, success, warning, simple
-        'is_icon' => true,
-        'icon'    => '',
-        'class'   => '',
-        'border'  => false
-    ];
-    $args     = wp_parse_args( $params, $defaults );
-
-    $icon = '';
-
-    if ( ! empty( $args['is_icon'] ) && empty( $args['icon'] ) ) {
-        switch ( $args['type'] ) {
-            case 'success':
-                $icon = 'fa-check-circle';
-                break;
-            case 'warning':
-                $icon = 'fa-exclamation-circle';
-                break;
-            case 'info':
-                $icon = 'fa-info-circle';
-                break;
-        }
-    } else if ( ! empty( $args['is_icon'] ) && isset( $args['icon'] ) ) {
-        $icon = $args['icon'];
-    }
-
-    $border = ! empty( $args['border'] ) ? 'frnd_border' : '';
-
-    $notice_block = '<div class="frnd_notify frnd_' . $args['type'] . ' ' . $args['class'] . ' ' . $border . '">';
-    if ( ! empty( $args['is_icon'] ) && ! empty( $icon ) )
-        $notice_block .= '<i class="rcli ' . $icon . '" aria-hidden="true"></i>';
-
-    if ( ! empty( $args['header'] ) )
-        $notice_block .= '<div class="frnd_notify_header">' . $args['header'] . '</div>';
-
-    $notice_block .= '<div class="frnd_notify_text">' . $args['text'] . '</div>';
-    $notice_block .= '</div>';
-
-    return $notice_block;
-}
-
 // добавим к блоку автора и к списку пользователей (rows)
 add_action( 'rcl_user_description', 'frnd_add_friends_author_publications', 40 );
 function frnd_add_friends_author_publications() {
+    if ( ! is_user_logged_in() )
+        return;
+
     if ( rcl_is_office() || is_singular( 'page' ) )
         return;
 

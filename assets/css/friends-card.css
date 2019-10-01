@@ -1,3 +1,7 @@
+.userlist.frnd-card-list {
+    margin: 0 0 12px;
+    padding: 0 0 12px;
+}
 .userlist.frnd-card-list .user-single {
     animation: u_card_fade 800ms cubic-bezier(0.4, 0, 0.2, 1);
     animation-fill-mode: forwards;
@@ -5,11 +9,11 @@
     float: left;
     font-size: 14px;
     margin: 1% .5%;
+    max-width: 350px;
     overflow: hidden;
     transform: translate3d(0px, 0px, 0px);
     transition: box-shadow 0.2s linear 0s;
     width: 49%;
-    max-width: 350px;
 }
 .userlist.frnd-card-list .user-single:hover {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.19), 0 6px 13px rgba(0, 0, 0, 0.2);

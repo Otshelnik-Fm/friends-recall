@@ -27,6 +27,15 @@ function frnd_send_offer() {
 
 // сама форма
 function frnd_offer_form( $datas ) {
+    $smilies = [];
+    if ( rcl_exist_addon( 'smilies-in-emoji' ) ) {
+        $smilies = [
+            'type'    => 'custom',
+            'slug'    => 'frnd_smls',
+            'content' => rcl_get_smiles( 'frnd_message' )
+        ];
+    }
+
     $fields = array(
         [
             'type'        => 'textarea',
@@ -38,6 +47,7 @@ function frnd_offer_form( $datas ) {
             'slug'  => 'frnd_from_to',
             'value' => $datas
         ],
+        $smilies,
     );
 
     $form = rcl_get_form( [
@@ -64,15 +74,15 @@ function frnd_save_offer_form() {
 
     if ( ( int ) $user_ID === $from ) {
         // получим еще раз статус, возможно race condition
-        $status = frnd_get_friendship_status_code( $from, $to );
+        $status = frnd_get_status_friendship( $from, $to );
 
         // всё еще нет никаких связей
-        if ( ! isset( $status ) ) {
+        if ( $status == 0 ) {
             // впишем в БД запрос
-            frnd_insert_offer_db( $from, $to );
+            frnd_send_friend_request( $from, $to );
 
             if ( isset( $mess ) && ! empty( $mess ) ) {
-                frnd_insert_offer_message_db( $from, $to, $mess );
+                frnd_send_friend_request_message( $from, $to, $mess );
             }
 
             wp_send_json( [
@@ -87,7 +97,7 @@ function frnd_save_offer_form() {
             frnd_update_offer_db( $from, $to );
 
             if ( isset( $mess ) && ! empty( $mess ) ) {
-                frnd_insert_offer_message_db( $from, $to, $mess );
+                frnd_send_friend_request_message( $from, $to, $mess );
             }
 
             wp_send_json( [
@@ -130,7 +140,7 @@ function frnd_send_operations() {
 
     // подтверждаем дружбу
     if ( $datas->type === 'confirm' ) {
-        $result = frnd_confirm_offer_db( $from, $to_user );
+        $result = frnd_confirm_friend_request( $from, $to_user );
 
         if ( ! empty( $result ) ) {
             wp_send_json( array(
@@ -144,7 +154,7 @@ function frnd_send_operations() {
 
     // оставим в подписчиках
     else if ( $datas->type === 'reject' ) {
-        $result = frnd_reject_offer_db( $from, $to_user );
+        $result = frnd_reject_friend_request( $from, $to_user );
 
         if ( ! empty( $result ) ) {
             wp_send_json( array(
@@ -158,7 +168,7 @@ function frnd_send_operations() {
 
     // удаляем друга
     else if ( $datas->type === 'delete' ) {
-        $result = frnd_delete_friend_db( $from, $to_user );
+        $result = frnd_remove_from_friends( $from, $to_user );
 
         if ( ! empty( $result ) ) {
             wp_send_json( array(

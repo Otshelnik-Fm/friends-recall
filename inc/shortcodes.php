@@ -9,9 +9,11 @@ function frnd_box_online_users( $attr ) {
     $out = '';
 
     $atts = shortcode_atts( array(
-        'title'      => 'Друзья на сайте:',
-        'not-online' => '',
-        'guest-text' => '',
+        'title'       => 'Друзья на сайте:',
+        'not-friends' => '',
+        'not-online'  => '',
+        'guest-text'  => '',
+        'number'      => 10,
         ), $attr, 'frnd_online' );
 
     if ( ! is_user_logged_in() ) {
@@ -23,7 +25,18 @@ function frnd_box_online_users( $attr ) {
         return $out;
     }
 
-    $datas = frnd_online_friends_db();
+    // нет друзей вообще
+    if ( ! frnd_check_current_user_has_friends() ) {
+        // нет друзей на сайте
+        if ( ! empty( $atts['not-friends'] ) ) {
+            $out .= '<h3>' . $atts['title'] . '</h3>';
+            $out .= $atts['not-friends'];
+        }
+
+        return $out;
+    }
+
+    $datas = frnd_get_online_friends( $atts['number'] );
 
     // нет друзей на сайте
     if ( ! $datas ) {

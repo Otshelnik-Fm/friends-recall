@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Получим массив/список друзей по id
  *
- * @since 1.1.0
+ * @since 2.0
  *
  * @param int $user_id  id юзера.
  *
@@ -17,11 +17,15 @@ if ( ! defined( 'ABSPATH' ) ) {
  *                      'false' - вернет массив.
  *                      Default 'false'.
  *
+ * @param int $limit    максимум к выборке. По умолчанию 1000
+ *
+ * @param int $offset   отступ в выборке. По умолчанию 0
+ *
  * @return string|array|bool    массив или список пользователей разделенных запятой: 1,2,3 и т.д.
  *                              'false' - если нет
  */
-function frnd_get_friend_user_ids( $user_id, $list = false ) {
-    $friends = frnd_friend_by_id_db( $user_id );
+function frnd_get_friends_by_id( $user_id, $list = false, $limit = 1000, $offset = 0 ) {
+    $friends = frnd_friend_by_id_db( $user_id, $limit, $offset );
 
     if ( ! $friends ) {
         return false;
@@ -37,7 +41,7 @@ function frnd_get_friend_user_ids( $user_id, $list = false ) {
 /**
  * Эти пользователи друзья?
  *
- * @since 1.1.0
+ * @since 2.0
  *
  * @param int $user_id  id юзера.
  *
@@ -47,7 +51,7 @@ function frnd_get_friend_user_ids( $user_id, $list = false ) {
  *                      'false' - не друзья.
  */
 function frnd_check_friendship( $user_id, $friend ) {
-    $status = frnd_get_friendship_status_code( $user_id, $friend );
+    $status = frnd_get_status_friendship( $user_id, $friend );
 
     if ( $status && $status == 2 ) {
         return true;
@@ -57,28 +61,79 @@ function frnd_check_friendship( $user_id, $friend ) {
 }
 
 /**
+ * Это кабинет друга?
+ *
+ * @since 2.0
+ *
+ * @return bool 'true' - Да.
+ *              'false' - Нет.
+ */
+function frnd_is_friend_office() {
+    $status = frnd_get_status_friendship_lk_to_current_user();
+
+    if ( $status == 2 ) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+/**
+ * Это публикация друга?
+ *
+ * @since 2.0
+ *
+ * @return bool 'true' - Да.
+ *              'false' - Нет.
+ */
+function frnd_is_friend_post() {
+    $status = frnd_get_status_friendship_author_to_current_user();
+
+    if ( $status == 2 ) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+/**
  * Получим статус дружбы 2-х пользователей (текстом)
  *
- * @since 1.1.0
+ * @since 2.0
  *
- * @param int $user_id  id юзера.
+ * @param int $user_id      id юзера.
  *
- * @param int $friend   id друга.
+ * @param int $friend       id друга.
  *
- * @return string       'not_friend' - Не друзья.
- *                      'pending' - Заявка в друзья подана. Ожидаем подтверждения.
- *                      'is_friend' - Друзья.
- *                      'subscriber' - Оставлен в подписчиках.
- *                      'ban' - Заблокирован. Бан.
+ * @param string $type      Тип вывода:
+ *                          'code' - вернет числовое значение (по умолчанию)
+ *                          'text' - текстовое значение
+ *
+ * @return string           '0' или 'not_friend' - Не друзья.
+ *                          '1' или'pending' - Заявка в друзья подана. Ожидаем подтверждения.
+ *                          '2' или 'is_friend' - Друзья.
+ *                          '3' или 'subscriber' - Оставлен в подписчиках.
+ *                          '4' или 'ban' - Заблокирован. Бан.
  */
-function frnd_get_friendship_status( $user_id, $friend ) {
+function frnd_get_status_friendship( $user_id, $friend, $type = 'code' ) {
     $status = frnd_get_friendship_status_code( $user_id, $friend );
 
-    if ( ! $status ) {
-        return 'not_friend';
+    if ( $type == 'code' ) {
+        return $status;
     }
 
+    // вернуть текстовое значение
+    else if ( $type == 'text' ) {
+        return frnd_convert_code_to_text( $status );
+    }
+}
+
+function frnd_convert_code_to_text( $status ) {
     switch ( $status ) {
+        // заявка подана
+        case 0:
+            return 'not_friend';
+
         // заявка подана
         case 1:
             return 'pending';
@@ -100,19 +155,322 @@ function frnd_get_friendship_status( $user_id, $friend ) {
 /**
  * Есть у пользователя друзья?
  *
- * @since 1.1.0
+ * @since 2.0
  *
  * @param int $user_id  id юзера.
  *
- * @return bool         'true' - есть друзья.
- *                      'false' — нет друзей.
+ * @return bool         'true'  - есть друзья.
+ *                      'false' - нет друзей.
  */
 function frnd_check_user_has_friends( $user_id ) {
-    $count = frnd_user_friend_count( $user_id );
+    $count = frnd_count_user_friends( $user_id );
 
     if ( $count && $count > 0 ) {
         return true;
     } else {
         return false;
     }
+}
+
+/**
+ * Есть у текущего пользователя друзья?
+ *
+ * @since 2.0
+ *
+ * @return bool     'true'  - есть друзья.
+ *                  'false' - нет друзей.
+ */
+function frnd_check_current_user_has_friends() {
+    $count_current_user_friends = frnd_base()->count_current_user_friends;
+
+    if ( $count_current_user_friends && $count_current_user_friends > 0 ) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+/**
+ * Считаем друзей текущего пользователя
+ *
+ * @since 2.0
+ *
+ * @return int  Число друзей ('0' - нет друзей)
+ */
+function frnd_count_current_user_friends() {
+    return frnd_base()->count_current_user_friends;
+}
+
+/**
+ * Считаем друзей ЛК
+ *
+ * @since 2.0
+ *
+ * @return int  Число друзей ('0' - нет друзей)
+ */
+function frnd_count_lk_friends() {
+    return frnd_base()->count_lk_friends;
+}
+
+/**
+ * Есть у текущего ЛК друзья?
+ *
+ * @since 2.0
+ *
+ * @return bool     'true'  - есть друзья.
+ *                  'false' - нет друзей.
+ */
+function frnd_check_lk_has_friends() {
+    $count = frnd_count_lk_friends();
+
+    if ( $count && $count > 0 ) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+/**
+ * Считаем входящие заявки в кабинет
+ *
+ * @since 2.0
+ *
+ * @return int  Число друзей ('0' - нет друзей)
+ */
+function frnd_count_incoming_friend_requests_lk() {
+    return frnd_base()->count_incoming_lk_requests;
+}
+
+/**
+ * Получим связи дружбы чужого ЛК к залогиненному и обратно
+ *
+ * @since 2.0
+ *
+ * @return array связи 1=>2 -> status, 2=>1 -> status
+ */
+function frnd_get_relation_friendship_current_user_to_lk() {
+    return frnd_base()->users_relations_to_lk;
+}
+
+/**
+ * Получим связи дружбы автора записи к залогиненному и обратно
+ *
+ * @since 2.0
+ *
+ * @return array связи 1=>2 -> status, 2=>1 -> status
+ */
+function frnd_get_relation_friendship_current_user_to_author() {
+    return frnd_base()->users_relations_to_author;
+}
+
+/**
+ * Получим статус дружбы чужого ЛК к залогиненному (владелец ЛК - друг?)
+ *
+ * @since 2.0
+ *
+ * @param string $type      Тип вывода:
+ *                          'code' - вернет числовое значение (по умолчанию)
+ *                          'text' - текстовое значение
+ *
+ * @return string           '0' или 'not_friend' - Не друзья.
+ *                          '1' или'pending' - Заявка в друзья подана. Ожидаем подтверждения.
+ *                          '2' или 'is_friend' - Друзья.
+ *                          '3' или 'subscriber' - Оставлен в подписчиках.
+ *                          '4' или 'ban' - Заблокирован. Бан.
+ */
+function frnd_get_status_friendship_lk_to_current_user( $type = 'code' ) {
+    $status = frnd_base()->status_lk_to_current_user;
+
+    if ( $type == 'code' ) {
+        return $status;
+    }
+
+    // вернуть текстовое значение
+    else if ( $type == 'text' ) {
+        return frnd_convert_code_to_text( $status );
+    }
+}
+
+/**
+ * Получим статус дружбы автора записи к залогиненному (Автор записи - друг?)
+ *
+ * @since 2.0
+ *
+ * @param string $type      Тип вывода:
+ *                          'code' - вернет числовое значение (по умолчанию)
+ *                          'text' - текстовое значение
+ *
+ * @return string           '0' или 'not_friend' - Не друзья.
+ *                          '1' или'pending' - Заявка в друзья подана. Ожидаем подтверждения.
+ *                          '2' или 'is_friend' - Друзья.
+ *                          '3' или 'subscriber' - Оставлен в подписчиках.
+ *                          '4' или 'ban' - Заблокирован. Бан.
+ */
+function frnd_get_status_friendship_author_to_current_user( $type = 'code' ) {
+    $status = frnd_base()->status_author_to_current_user;
+
+    if ( $type == 'code' ) {
+        return $status;
+    }
+
+    // вернуть текстовое значение
+    else if ( $type == 'text' ) {
+        return frnd_convert_code_to_text( $status );
+    }
+}
+
+// при удалении пользователя - очистим
+add_action( 'delete_user', 'frnd_delete_user' );
+function frnd_delete_user( $user_id ) {
+    frnd_del_all_messages_by_user_id( $user_id );
+
+    frnd_del_all_friendships_by_user_id( $user_id );
+}
+
+/**
+ * Уведомления. Должны быть в 17-й версии WP-Recall. Но пока их там нет - юзаем отсюда
+ *
+ * @since 1.0
+ *
+ * @param array $params {
+ *     Array arguments.
+ *
+ *     @type string $header     Header text. Default empty.
+ *     @type string $text       Message text. Default empty.
+ *     @type string $type       Type of block: 'info' (yellow), 'success' (green), 'warning' (red), 'simple' (light grey).
+ *                              Default 'info'.
+ *     @type bool $is_icon      Return icon. Default true.
+ *     @type string $icon       Alternate rcl-awesome icon. Default empty.
+ *     @type string $class      Additional class of block. Default empty.
+ *     @type bool $border       Border on box. Default true.
+ * }
+ *
+ * @return string
+ */
+function frnd_notice( $params ) {
+    $defaults = [
+        'header'  => '',
+        'text'    => '',
+        'type'    => 'info', // info, success, warning, simple
+        'is_icon' => true,
+        'icon'    => '',
+        'class'   => '',
+        'border'  => true
+    ];
+    $args     = wp_parse_args( $params, $defaults );
+
+    $icon = '';
+
+    if ( ! empty( $args['is_icon'] ) && empty( $args['icon'] ) ) {
+        switch ( $args['type'] ) {
+            case 'success':
+                $icon = 'fa-check-circle';
+                break;
+            case 'warning':
+                $icon = 'fa-exclamation-circle';
+                break;
+            case 'info':
+                $icon = 'fa-info-circle';
+                break;
+        }
+    } else if ( ! empty( $args['is_icon'] ) && isset( $args['icon'] ) ) {
+        $icon = $args['icon'];
+    }
+
+    $border = ! empty( $args['border'] ) ? 'frnd_border' : '';
+
+    $notice_block = '<div class="frnd_notify frnd_' . $args['type'] . ' ' . $args['class'] . ' ' . $border . '">';
+    if ( ! empty( $args['is_icon'] ) && ! empty( $icon ) )
+        $notice_block .= '<i class="rcli ' . $icon . '" aria-hidden="true"></i>';
+
+    if ( ! empty( $args['header'] ) )
+        $notice_block .= '<div class="frnd_notify_header">' . $args['header'] . '</div>';
+
+    $notice_block .= '<div class="frnd_notify_text">' . $args['text'] . '</div>';
+    $notice_block .= '</div>';
+
+    return $notice_block;
+}
+
+/**
+ * склонения "друг, друга, друзей"
+ *
+ * @since 1.0
+ *
+ * @param int $n    Передаем из счетчика число.
+ *
+ * @param array $w  [ 'Друг', 'Друга', 'Друзей' ]
+ *
+ * @return string   e.g. ($n = 5) 'Друзей'
+ */
+function frnd_decline_friend( $n, $w = array( '', '', '' ) ) {
+    $x  = ($xx = abs( $n ) % 100) % 10;
+    return $w[($xx > 10 AND $xx < 15 OR ! $x OR $x > 4 AND $x < 10) ? 2 : ($x == 1 ? 0 : 1)];
+}
+
+/**
+ * склоняем по полу
+ *
+ * @since 2.0.0
+ *
+ * @param int $user_id      id user ('-1' reserved for wp-cron).
+ *
+ * @param array $data       ['опубликовал','опубликовала']
+ *
+ * @return string           e.g. 'опубликовал'
+ */
+function frnd_decline_by_sex( $user_id, $data ) {
+    if ( $user_id == '-1' )
+        return $data[0];
+
+    $sex = get_user_meta( $user_id, 'rcl_sex', true );
+
+    $out = $data[0];
+
+    if ( $sex ) {
+        $out = ($sex === 'Женский') ? $data[1] : $data[0];
+    }
+
+    return $out;
+}
+
+/**
+ * получим имя автора
+ *
+ * @since 2.0
+ *
+ * @param int $user_id      id user.
+ *
+ * @return string           имя владельца кабинета или автора записи
+ */
+function frnd_get_author_name( $user_id ) {
+    $userdatas = get_userdata( $user_id );
+    $name      = $userdatas->get( 'display_name' );
+    if ( ! $name ) {
+        $name = $userdatas->get( 'user_login' );
+    }
+
+    return $name;
+}
+
+/**
+ * если это друг - в его ЛК добавим в body доп класс
+ *
+ * @since 2.0
+ *
+ * @return string   body class 'frnd_is_friend'.
+ */
+add_filter( 'body_class', 'frnd_add_body_class_friend' );
+function frnd_add_body_class_friend( $classes ) {
+    if ( ! is_user_logged_in() && ! rcl_is_office() )
+        return $classes;
+
+    global $user_ID;
+
+    // в чужом ЛК
+    if ( ! rcl_is_office( $user_ID ) && frnd_is_friend_office() ) {
+        $classes[] = 'frnd_is_friend';
+    }
+
+    return $classes;
 }

@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Уведомление через Rcl-Notification
-add_action( 'frnd_offer', 'frnd_support_rcl_notifications', 10, 2 );
+add_action( 'frnd_send_request', 'frnd_support_rcl_notifications', 10, 2 );
 function frnd_support_rcl_notifications( $user_id, $friend ) {
     if ( ! rcl_exist_addon( 'notification' ) )
         return;
@@ -54,7 +54,7 @@ function frnd_rcl_notice() {
     if ( rcl_is_office( $user_ID ) )
         return;
 
-    $offer = frnd_incoming_friend_count( $user_ID );
+    $offer = frnd_count_incoming_friend_requests( $user_ID );
 
     if ( ! $offer )
         return;

@@ -1,0 +1,77 @@
+/* notice */
+.frnd_notify {
+    box-sizing: border-box;
+    font-size: 16px;
+    line-height: 1.4;
+    margin: 6px 0 !important;
+    overflow: hidden;
+    padding: 12px 36px !important;
+    position: relative;
+}
+.frnd_info {
+    background-color: #fff5ce;
+    color: #736d3a;
+}
+.frnd_info.frnd_border {
+    border: 1px solid #efe5be;
+}
+.frnd_success {
+    background-color: #e0f8c9;
+    color: #457b3f;
+}
+.frnd_success.frnd_border {
+    border: 1px solid #d0e8b9;
+}
+.frnd_warning {
+    background-color: #ffe0df;
+    color: #a94953;
+}
+.frnd_warning.frnd_border {
+    border: 1px solid #efcfd3;
+}
+.frnd_simple {
+    background-color: #eee;
+    color: #555;
+}
+.frnd_simple.frnd_border {
+    border: 1px solid #ddd;
+}
+.frnd_notify > .rcli {
+    color: rgba(0, 0, 0, 0.08);
+    font-size: 52px;
+    left: -10px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.frnd_notify_text {
+    text-align: center;
+}
+.frnd_notify_text > p {
+    margin: 0;
+    padding: 0;
+}
+.frnd_notify_text .frnd_actions_bttn {
+    display: inline-flex;
+    padding: 0 6px 0 0;
+}
+.frnd_notify_header {
+    color: currentColor;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin: 0 0 6px 6px;
+}
+/* END */
+:not(.cab_bttn_lite) > #tab-button-friends > a {
+    display: inline-flex;
+}
+:not(.cab_bttn_lite) > #tab-button-friends i {
+    flex-shrink: 0;
+}
+:not(.cab_bttn_lite) > #tab-button-friends > a > span {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px 0 8px;
+    width: 100%;
+}

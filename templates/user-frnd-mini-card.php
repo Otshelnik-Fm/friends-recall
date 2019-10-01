@@ -1,6 +1,6 @@
 <?php
 /*  Шаблон дополнения Friends Recall https://codeseller.ru/products/friends-recall/
-  Версия шаблона: v1.0
+  Версия шаблона: v1.1
   Шаблон вывода списка друзей в вкладке ЛК - "Мини карточкой"
   Этот шаблон можно скопировать в папку WP-Recall шаблонов по пути: ваш-сайт/wp-content/wp-recall/templates/
   - сделать нужные вам правки и изменения и он будет подключаться оттуда
@@ -37,6 +37,7 @@ if ( in_array( 'posts_count', $rcl_users_set->data ) ) {
     <div class="frnd_bottom">
         <div class="frnd_n_publications"><span>Публикаций:</span><span><?php echo $up_count; ?></span></div>
         <div class="frnd_n_comments"><span>Комментариев:</span><span><?php echo $uc_count; ?></span></div>
+        <?php do_action( 'frnd_bottom', $rcl_user ); ?>
     </div>
-    <?php do_action( 'frnd_button' ); ?>
+    <?php do_action( 'frnd_button', $rcl_user ); ?>
 </div>

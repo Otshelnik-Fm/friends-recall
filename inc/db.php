@@ -5,10 +5,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /*
- * Статусы:
+ * В БД статусы:
  *
  * NULL - никакой связи не было
- * 0    - не используется
+ * 0    - не используется. Но зарезервировано функцией ниже
  * 1    - заявка на дружбу подана. Рассматривается
  * 2    - дружит
  * 3    - отклонён. Значит подписчик
@@ -20,17 +20,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Получим статус дружбы 2-х пользователей (числом)
  *
- * @since 1.1.0
+ * @since 2.0
  *
  * @param int $user_id  id юзера.
  *
  * @param int $friend   id друга.
  *
- * @return int|null     'null' - Никакой связи не было.
- *                      '1'    - Заявка на дружбу подана. Рассматривается.
- *                      '2'    - Дружит.
- *                      '3'    - Отклонён. Значит подписчик.
- *                      '4'    - Заблокирован. Бан.
+ * @return int          '0'     - Нет дружбы
+ *                      '1'     - Заявка на дружбу подана. Рассматривается.
+ *                      '2'     - Дружит.
+ *                      '3'     - Отклонён. Значит подписчик.
+ *                      '4'     - Заблокирован. Бан.
  */
 function frnd_get_friendship_status_code( $user_id, $friend ) {
     global $wpdb;
@@ -42,20 +42,8 @@ function frnd_get_friendship_status_code( $user_id, $friend ) {
             . "AND friend_id = '%d'", $user_id, $friend
         ) );
 
-    return $status;
-}
-
-/* deprecated */
-function frnd_get_friend_by_id( $user_id, $friend ) {
-    _deprecated_function( __FUNCTION__, '1.1', 'frnd_get_friendship_status_code()' );
-
-    global $wpdb;
-
-    $status = $wpdb->get_var( $wpdb->prepare(
-            "SELECT status "
-            . "FROM " . FRND_DB . " "
-            . "WHERE (owner_id,friend_id) IN (('%d','%d'),('%d','%d'))", $user_id, $friend, $friend, $user_id
-        ) );
+    if ( ! $status )
+        $status = 0;
 
     return $status;
 }
@@ -63,7 +51,7 @@ function frnd_get_friend_by_id( $user_id, $friend ) {
 /**
  * Получим связи дружбы
  *
- * @since 1.0.0
+ * @since 2.0
  *
  * @param int $user_id  id юзера.
  *
@@ -79,7 +67,10 @@ function frnd_get_friend_by_id( $user_id, $friend ) {
  *                          3    - Отклонён. Значит подписчик.
  *                          4    - Заблокирован. Бан.
  */
-function frnd_get_relation_by_id( $user_id, $friend ) {
+function frnd_get_relation_friendship( $user_id, $friend ) {
+    if ( ! $user_id || ! $friend )
+        return;
+
     global $wpdb;
 
     $status = $wpdb->get_results(
@@ -100,10 +91,10 @@ function frnd_update_offer_db( $user_id, $friend ) {
     $status = false;
 
     // проверяем связи "кто к кому"
-    $relation = frnd_get_relation_by_id( $user_id, $friend );
+    $relation = frnd_get_relation_friendship( $user_id, $friend );
 
     // этот запрос был. Обновим время, статус
-    if ( $relation[0]['owner_id'] == $user_id && $relation[0]['status'] == 3 ) {
+    if ( ($relation[0]['owner_id'] == $user_id || $relation[0]['friend_id'] == $user_id ) && $relation[0]['status'] == 3 ) {
         $data   = array( 'actions_date' => current_time( 'mysql' ), 'status' => 1 );
         $where  = array( 'owner_id' => $user_id, 'friend_id' => $friend );
         $format = array( '%s', '%d' );
@@ -112,19 +103,9 @@ function frnd_update_offer_db( $user_id, $friend ) {
             FRND_DB, $data, $where, $format
         );
     }
-    // а это обратный запрос
-    else if ( $relation[0]['friend_id'] == $user_id && $relation[0]['status'] == 3 ) {
-        $data   = array( 'owner_id' => $user_id, 'friend_id' => $friend, 'actions_date' => current_time( 'mysql' ), 'status' => 1 );
-        $where  = array( 'owner_id' => $friend, 'friend_id' => $user_id );
-        $format = array( '%d', '%d', '%s', '%d' );
-
-        $status = $wpdb->update(
-            FRND_DB, $data, $where, $format
-        );
-    }
 
     if ( isset( $status ) && $status > 0 ) {
-        do_action( 'frnd_offer', $user_id, $friend );
+        do_action( 'frnd_send_request', $user_id, $friend );
     }
 
     return $status;
@@ -133,16 +114,16 @@ function frnd_update_offer_db( $user_id, $friend ) {
 /**
  * Подаем запрос в друзья
  *
- * @since 1.0.0
+ * @since 2.0
  *
- * @param int $user_id  id юзера.
+ * @param int $user_id  (from) id юзера.
  *
- * @param int $friend   id друга.
+ * @param int $friend   (to) id друга.
  *
  * @return int|bool     'число' - при успешной вставке.
  *                      'false' — если данные не были вставлены в таблицу.
  */
-function frnd_insert_offer_db( $user_id, $friend ) {
+function frnd_send_friend_request( $user_id, $friend ) {
     global $wpdb;
 
     $status = $wpdb->insert(
@@ -150,7 +131,7 @@ function frnd_insert_offer_db( $user_id, $friend ) {
     );
 
     if ( $status ) {
-        do_action( 'frnd_offer', $user_id, $friend );
+        do_action( 'frnd_send_request', $user_id, $friend );
     }
 
     return $status;
@@ -159,7 +140,7 @@ function frnd_insert_offer_db( $user_id, $friend ) {
 /**
  * Запишем в БД текст запроса в друзья
  *
- * @since 1.0.0
+ * @since 2.0
  *
  * @param int $user_id  id юзера.
  *
@@ -170,7 +151,7 @@ function frnd_insert_offer_db( $user_id, $friend ) {
  * @return int|bool     'число' - при успешной вставке.
  *                      'false' — если данные не были вставлены в таблицу.
  */
-function frnd_insert_offer_message_db( $user_id, $friend, $mess ) {
+function frnd_send_friend_request_message( $user_id, $friend, $mess ) {
     global $wpdb;
 
     $status = $wpdb->insert(
@@ -187,7 +168,7 @@ function frnd_insert_offer_message_db( $user_id, $friend, $mess ) {
 /**
  * Получим текст запроса в друзья
  *
- * @since 1.0.0
+ * @since 2.0
  *
  * @param int $user_id  id юзера.
  *
@@ -197,7 +178,7 @@ function frnd_insert_offer_message_db( $user_id, $friend, $mess ) {
  * @return text|null    'text' - Текст сообщения.
  *                      'null' - Если ничего не найдено
  */
-function frnd_get_messages_db( $user_id, $friend ) {
+function frnd_get_friend_request_message( $user_id, $friend ) {
     global $wpdb;
 
     $mess = $wpdb->get_var( $wpdb->prepare(
@@ -206,13 +187,13 @@ function frnd_get_messages_db( $user_id, $friend ) {
             . "WHERE (from_id,to_id) IN (('%d','%d'),('%d','%d'))", $user_id, $friend, $friend, $user_id
         ) );
 
-    return $mess;
+    return esc_html( $mess );
 }
 
 /**
  * Одобрим запрос в друзья (сменим статус первого и добавим второго как друга)
  *
- * @since 1.0.0
+ * @since 2.0
  *
  * @param int $from     id юзера.
  *
@@ -221,20 +202,29 @@ function frnd_get_messages_db( $user_id, $friend ) {
  * @return bool         'true' - при успешной отработке.
  *                      'false' — если данные не были вставлены в таблицу.
  */
-function frnd_confirm_offer_db( $from, $to_user ) {
+function frnd_confirm_friend_request( $from, $to_user ) {
     global $wpdb;
 
     $update = $wpdb->update( FRND_DB, array( 'owner_id' => $to_user, 'friend_id' => $from, 'actions_date' => current_time( 'mysql' ), 'status' => 2 ), array( 'owner_id' => $to_user, 'friend_id' => $from ), array( '%d', '%d', '%s', '%d' ), array( '%d', '%d' )
     );
 
-    $insert = $wpdb->insert(
-        FRND_DB, array( 'owner_id' => $from, 'friend_id' => $to_user, 'actions_date' => current_time( 'mysql' ), 'status' => 2 ), array( '%d', '%d', '%s', '%d' )
-    );
+    // получим статус - вдруг уже был в подписчиках или забанен
+    $status = frnd_get_status_friendship( $from, $to_user );
+
+    // имелись связи - обновим
+    if ( isset( $status ) && $status > 0 ) {
+        $insert = $wpdb->update( FRND_DB, array( 'owner_id' => $from, 'friend_id' => $to_user, 'actions_date' => current_time( 'mysql' ), 'status' => 2 ), array( 'owner_id' => $from, 'friend_id' => $to_user ), array( '%d', '%d', '%s', '%d' ), array( '%d', '%d' )
+        );
+    } else {
+        $insert = $wpdb->insert(
+            FRND_DB, array( 'owner_id' => $from, 'friend_id' => $to_user, 'actions_date' => current_time( 'mysql' ), 'status' => 2 ), array( '%d', '%d', '%s', '%d' )
+        );
+    }
 
     frnd_del_message( $from, $to_user );
 
     if ( $update && $insert ) {
-        do_action( 'frnd_confirm_offer', $from, $to_user );
+        do_action( 'frnd_confirm_request', $from, $to_user );
         return true;
     } else {
         return false;
@@ -253,7 +243,7 @@ function frnd_del_message( $from, $to_user ) {
 /**
  * Отклоним запрос в друзья (и переведем его в подписчики)
  *
- * @since 1.0.0
+ * @since 2.0
  *
  * @param int $from     id юзера.
  *
@@ -262,7 +252,7 @@ function frnd_del_message( $from, $to_user ) {
  * @return bool         'true' - при успешной отработке.
  *                      'false' — при ошибке.
  */
-function frnd_reject_offer_db( $from, $to_user ) {
+function frnd_reject_friend_request( $from, $to_user ) {
     global $wpdb;
 
     $update = $wpdb->update( FRND_DB, array( 'owner_id' => $to_user, 'friend_id' => $from, 'actions_date' => current_time( 'mysql' ), 'status' => 3 ), array( 'owner_id' => $to_user, 'friend_id' => $from ), array( '%d', '%d', '%s', '%d' ), array( '%d', '%d' )
@@ -276,7 +266,7 @@ function frnd_reject_offer_db( $from, $to_user ) {
     }
 
     if ( $update ) {
-        do_action( 'frnd_reject_offer', $from, $to_user );
+        do_action( 'frnd_reject_request', $from, $to_user );
         return true;
     } else {
         return false;
@@ -286,7 +276,7 @@ function frnd_reject_offer_db( $from, $to_user ) {
 /**
  * Удалим из друзей
  *
- * @since 1.0.0
+ * @since 2.0
  *
  * @param int $from     id юзера.
  *
@@ -295,7 +285,7 @@ function frnd_reject_offer_db( $from, $to_user ) {
  * @return bool         'true' - при успешной отработке.
  *                      'false' — при ошибке.
  */
-function frnd_delete_friend_db( $from, $to_user ) {
+function frnd_remove_from_friends( $from, $to_user ) {
     global $wpdb;
 
     $del = $wpdb->query( $wpdb->prepare( "DELETE FROM " . FRND_DB . " WHERE (owner_id,friend_id) IN (('%d','%d'),('%d','%d'))", $from, $to_user, $to_user, $from ) );
@@ -318,13 +308,13 @@ function frnd_delete_friend_db( $from, $to_user ) {
 /**
  * Считаем входящие запросы в друзья
  *
- * @since 1.0.0
+ * @since 2.0
  *
  * @param int $user_id  id юзера.
  *
  * @return int|null     Число входящих запросов ('null' - если нет)
  */
-function frnd_incoming_friend_count( $user_id ) {
+function frnd_count_incoming_friend_requests( $user_id ) {
     global $wpdb;
 
     $count = $wpdb->get_var( $wpdb->prepare(
@@ -340,13 +330,13 @@ function frnd_incoming_friend_count( $user_id ) {
 /**
  * Считаем исходящие запросы в друзья
  *
- * @since 1.0.0
+ * @since 2.0
  *
  * @param int $user_id  id юзера.
  *
  * @return int|null     Число исходящих запросов ('null' - если нет)
  */
-function frnd_outcoming_friend_count( $user_id ) {
+function frnd_count_outgoing_friend_requests( $user_id ) {
     global $wpdb;
 
     $count = $wpdb->get_var( $wpdb->prepare(
@@ -359,21 +349,21 @@ function frnd_outcoming_friend_count( $user_id ) {
 }
 
 /**
- * Посчитаем сколько друзей
+ * Посчитаем сколько друзей по ID
  *
- * @since 1.0.0
+ * @since 2.0
  *
  * @param int $user_id  id юзера.
  *
  * @return int          Число друзей (0 - если нет)
  */
-function frnd_user_friend_count( $user_id ) {
+function frnd_count_user_friends( $user_id ) {
     global $wpdb;
 
     $count = $wpdb->get_var( $wpdb->prepare(
             "SELECT COUNT(id) "
             . "FROM " . FRND_DB . " "
-            . "WHERE friend_id = %d AND status = 2", $user_id
+            . "WHERE owner_id = %d AND status = 2", $user_id
         ) );
 
     if ( ! $count ) {
@@ -384,15 +374,15 @@ function frnd_user_friend_count( $user_id ) {
 }
 
 // Друзья по ID
-// Используй вместо неё функцию frnd_get_friend_user_ids()
-function frnd_friend_by_id_db( $user_id ) {
+// Используй вместо неё функцию frnd_get_friends_by_id()
+function frnd_friend_by_id_db( $user_id, $limit, $offset ) {
     global $wpdb;
 
     $ids = $wpdb->get_col( $wpdb->prepare(
             "SELECT owner_id "
             . "FROM " . FRND_DB . " "
             . "WHERE friend_id = %d AND status = 2 "
-            . "LIMIT 0,10000", $user_id
+            . "LIMIT %d, %d", $user_id, $offset, $limit
         ) );
 
     return $ids;
@@ -423,10 +413,10 @@ function frnd_is_feed( $from, $to_user ) {
 
   )
  */
-function frnd_online_friends_db() {
+function frnd_get_online_friends( $limit ) {
     global $wpdb, $user_ID;
 
-    $ids = frnd_get_friend_user_ids( $user_ID, 'list' );
+    $ids = frnd_get_friends_by_id( $user_ID, 'list' );
 
     if ( ! $ids )
         return;
@@ -442,8 +432,54 @@ function frnd_online_friends_db() {
             WHERE actions.time_action > date_sub('" . current_time( 'mysql' ) . "', interval 10 minute)
             AND wp_users.ID IN (" . $ids . ")
             ORDER BY actions.time_action DESC
-            LIMIT 0,10
+            LIMIT 0," . $limit . "
         ", ARRAY_A );
 
     return $datas;
+}
+
+/**
+ * удалим все сообщения по id пользователя
+ *
+ * @since 2.0
+ *
+ * @param int $user_id  id пользователя.
+ *
+ * @return int|bool     'число' - кол-во строк удалено.
+ *                      'false' — если ошибка.
+ */
+function frnd_del_all_messages_by_user_id( $user_id ) {
+    if ( ! $user_id || $user_id == 0 )
+        return;
+
+    $user_deleted = ( int ) $user_id;
+
+    global $wpdb;
+
+    $del = $wpdb->query( "DELETE FROM " . FRND_MESS_DB . " WHERE from_id = '$user_deleted' OR to_id = '$user_deleted'" );
+
+    return $del;
+}
+
+/**
+ * удалим все связи по id пользователя
+ *
+ * @since 2.0
+ *
+ * @param int $user_id  id пользователя.
+ *
+ * @return int|bool     'число' - кол-во строк удалено.
+ *                      'false' — если ошибка.
+ */
+function frnd_del_all_friendships_by_user_id( $user_id ) {
+    if ( ! $user_id || $user_id == 0 )
+        return;
+
+    $user_deleted = ( int ) $user_id;
+
+    global $wpdb;
+
+    $del = $wpdb->query( "DELETE FROM " . FRND_DB . " WHERE owner_id = '$user_deleted' OR friend_id = '$user_deleted'" );
+
+    return $del;
 }

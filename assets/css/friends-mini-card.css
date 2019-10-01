@@ -1,12 +1,16 @@
 .userlist.frnd-mini-card-list .user-single {
+    border: 1px solid #e2e2e2;
+    box-shadow: none;
     float: left;
     margin: 6px 0.5%;
     min-width: 150px;
     padding: 6px;
+    transition: all 0.3s ease-out;
     width: 13%;
 }
 .userlist.frnd-mini-card-list .user-single:hover {
-    box-shadow: 0 0 2px 2px #ccc;
+    border-color: #2986AE;
+    box-shadow: 6px 6px 12px -6px #aaa,0 0 2px 1px rgba(0, 0, 0, 0.1);
 }
 .userlist.frnd-mini-card-list .thumb-user {
     width:100%
@@ -14,32 +18,40 @@
 .frnd_bottom {
     display: flex;
     flex-wrap: wrap;
+    padding: 6px 3px 0;
     width: 100%;
-    padding: 3px;
 }
 .frnd_bottom > div {
     display: flex;
     justify-content: space-between;
     width: 100%;
 }
-.frnd-mini-card-list .frnd_delete {
+.frnd_bottom + .frnd_actions_bttn {
+    margin-top: 6px;
+}
+.frnd-mini-card-list .frnd_actions_bttn {
+    border-top: 1px solid #e2e2e2;
     display: flex;
+    padding: 6px 0 0;
     width: 100%;
 }
-.frnd-mini-card-list .frnd_delete > a {
+.frnd-mini-card-list .user-single:hover .frnd_actions_bttn {
+    border-top-color: orange;
+}
+.userlist.frnd-mini-card-list .frnd_actions_bttn > a {
+    color: #fff;
     display: flex;
-    justify-content: center;
     height: 100%;
-    margin: 3px 0 0;
+    justify-content: center;
+    margin: 0;
 }
 @media screen and (max-width:480px) {
-    .userlist.frnd-mini-card-list .user-single {
-        padding: 1%;
-        width: 19%;
+    .userlist.frnd-mini-card-list {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
     }
-}
-@media screen and (max-width:375px) {
     .userlist.frnd-mini-card-list .user-single {
-        width: 24%;
+        width: 49%;
     }
 }

@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-add_action( 'frnd_offer', 'frnd_offer_mail', 10, 2 );
+add_action( 'frnd_send_request', 'frnd_offer_mail', 10, 2 );
 function frnd_offer_mail( $user_id, $friend ) {
     $from_userdata = get_userdata( $user_id );
     $to_userdata   = get_userdata( $friend );
