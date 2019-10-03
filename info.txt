@@ -1,7 +1,7 @@
 Name: Friends Recall;
-Version: 2.0;
+Version: 2.0.1;
 Support Core: 16.17.0;
 Description: Функционал друзей на вашем сайте;
 Author: Владимир Дружаев (Otshelnik-Fm);
-Author URI: https://otshelnik-fm.ru/?utm_source=free-addons&utm_medium=addon-manager&utm_campaign=friends-recall&utm_content=not-domain&utm_term=home-page;;
+Author URI: https://otshelnik-fm.ru/?utm_source=free-addons&utm_medium=addon-manager&utm_campaign=friends-recall&utm_content=not-domain&utm_term=home-page;
 Add-on URI: https://codeseller.ru/products/friends-recall/;

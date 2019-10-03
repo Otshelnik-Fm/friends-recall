@@ -2,7 +2,7 @@
 .frnd_notify {
     box-sizing: border-box;
     font-size: 16px;
-    line-height: 1.4;
+    line-height: normal;
     margin: 6px 0 !important;
     overflow: hidden;
     padding: 12px 36px !important;
@@ -10,28 +10,28 @@
 }
 .frnd_info {
     background-color: #fff5ce;
-    color: #736d3a;
+    color: #53532d;
 }
 .frnd_info.frnd_border {
     border: 1px solid #efe5be;
 }
 .frnd_success {
-    background-color: #e0f8c9;
-    color: #457b3f;
+    background-color: #e6f4cd;
+    color: #335832;
 }
 .frnd_success.frnd_border {
-    border: 1px solid #d0e8b9;
+    border: 1px solid #c6dab2;
 }
 .frnd_warning {
     background-color: #ffe0df;
-    color: #a94953;
+    color: #7f333b;
 }
 .frnd_warning.frnd_border {
-    border: 1px solid #efcfd3;
+    border: 1px solid #e6c5c9;
 }
 .frnd_simple {
     background-color: #eee;
-    color: #555;
+    color: #4f4f4f;
 }
 .frnd_simple.frnd_border {
     border: 1px solid #ddd;
