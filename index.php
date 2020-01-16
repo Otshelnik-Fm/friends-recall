@@ -231,7 +231,7 @@ function frnd_button_in_notice_box( $user_id, $to_user ) {
         'icon' => 'fa-handshake-o',
     ];
 
-    return frnd_notice( $data );
+    return rcl_get_notice( $data );
 }
 
 // Кнопка - запрос дружбы + модалка для сообщения

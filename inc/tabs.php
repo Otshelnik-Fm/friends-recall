@@ -159,22 +159,18 @@ function frnd_all_friends_tab( $count ) {
         $datas = '';
         if ( rcl_is_office( $user_ID ) ) {
             $data = [
-                'type'   => 'info',
-                'border' => true,
-                'text'   => 'У вас пока нет друзей',
-                'icon'   => 'fa-info-circle',
+                'text' => 'У вас пока нет друзей'
             ];
 
             $datas = apply_filters( 'frnd_you_not_friends', $data );
         } else {
             $data = [
-                'text' => 'Пока нет друзей',
-                'icon' => 'fa-info-circle',
+                'text' => 'Пока нет друзей'
             ];
 
             $datas = apply_filters( 'frnd_not_friends', $data );
         }
-        $content .= frnd_notice( $datas );
+        $content .= rcl_get_notice( $datas );
     }
 
     return $content;
@@ -252,13 +248,12 @@ function frnd_inc_friends_tab() {
             ) );
     } else {
         $data = [
-            'text' => 'Запросов нет',
-            'icon' => 'fa-info-circle',
+            'text' => 'Запросов нет'
         ];
 
         $datas = apply_filters( 'frnd_not_inc_friends', $data );
 
-        $content .= frnd_notice( $datas );
+        $content .= rcl_get_notice( $datas );
     }
 
 
@@ -336,13 +331,12 @@ function frnd_out_friends_tab() {
             ) );
     } else {
         $data = [
-            'text' => 'Заявок нет',
-            'icon' => 'fa-info-circle',
+            'text' => 'Заявок нет'
         ];
 
         $datas = apply_filters( 'frnd_not_out_friends', $data );
 
-        $content .= frnd_notice( $datas );
+        $content .= rcl_get_notice( $datas );
     }
 
     return $content;

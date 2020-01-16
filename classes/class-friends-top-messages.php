@@ -88,7 +88,7 @@ class FriendsTopMessages {
             'icon' => 'fa-hand-pointer-o',
         ];
 
-        return frnd_notice( $data );
+        return rcl_get_notice( $data );
     }
 
     // 2. В своём ЛК
@@ -104,7 +104,7 @@ class FriendsTopMessages {
             'icon' => 'fa-bell-o',
         ];
 
-        return frnd_notice( $data );
+        return rcl_get_notice( $data );
     }
 
     // 3. В чужом ЛК, к вам в друзья
@@ -122,18 +122,18 @@ class FriendsTopMessages {
             'icon' => 'fa-handshake-o',
         ];
 
-        return frnd_notice( $data );
+        return rcl_get_notice( $data );
     }
 
     // 5. В чужом ЛК - он меня забанил
     private function top_mess_ban() {
         $data = [
-            'type' => 'warning',
+            'type' => 'error',
             'text' => 'Пользователь вас забанил',
             'icon' => 'fa-ban',
         ];
 
-        return frnd_notice( $data );
+        return rcl_get_notice( $data );
     }
 
 }

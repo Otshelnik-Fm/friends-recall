@@ -1,67 +1,7 @@
-/* notice */
-.frnd_notify {
-    box-sizing: border-box;
-    font-size: 16px;
-    line-height: normal;
-    margin: 6px 0 !important;
-    overflow: hidden;
-    padding: 12px 36px !important;
-    position: relative;
-}
-.frnd_info {
-    background-color: #fff5ce;
-    color: #53532d;
-}
-.frnd_info.frnd_border {
-    border: 1px solid #efe5be;
-}
-.frnd_success {
-    background-color: #e6f4cd;
-    color: #335832;
-}
-.frnd_success.frnd_border {
-    border: 1px solid #c6dab2;
-}
-.frnd_warning {
-    background-color: #ffe0df;
-    color: #7f333b;
-}
-.frnd_warning.frnd_border {
-    border: 1px solid #e6c5c9;
-}
-.frnd_simple {
-    background-color: #eee;
-    color: #4f4f4f;
-}
-.frnd_simple.frnd_border {
-    border: 1px solid #ddd;
-}
-.frnd_notify > .rcli {
-    color: rgba(0, 0, 0, 0.08);
-    font-size: 52px;
-    left: -10px;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-}
-.frnd_notify_text {
-    text-align: center;
-}
-.frnd_notify_text > p {
-    margin: 0;
-    padding: 0;
-}
-.frnd_notify_text .frnd_actions_bttn {
+.rcl-notice__text .frnd_actions_bttn {
     display: inline-flex;
     padding: 0 6px 0 0;
 }
-.frnd_notify_header {
-    color: currentColor;
-    font-size: 1.1em;
-    font-weight: bold;
-    margin: 0 0 6px 6px;
-}
-/* END */
 :not(.cab_bttn_lite) > #tab-button-friends > a {
     display: inline-flex;
 }
