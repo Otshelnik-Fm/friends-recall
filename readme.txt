@@ -1,13 +1,13 @@
 == Установка/Обновление ==
 
-<h3 style="text-align: center;">Установка:</h3>
+<h2 style="text-align:center;color:#26901b;font-weight:bold;">Установка:</h2>
 Т.к. это дополнение для WordPress плагина <a href="https://codeseller.ru/groups/plagin-wp-recall-lichnyj-kabinet-na-wordpress/" target="_blank">WP-Recall</a>, то оно устанавливается через <a href="https://codeseller.ru/obshhie-svedeniya-o-dopolneniyax-wp-recall/" target="_blank"><strong>менеджер дополнений WP-Recall</strong></a>.
 
 1. В админке вашего сайта перейдите на страницу "WP-Recall" -> "Дополнения" и в самом верху нажмите на кнопку "Обзор", выберите .zip архив дополнения на вашем пк и нажмите кнопку "Установить".
 2. В списке загруженных дополнений, на этой странице, найдите это дополнение, наведите на него курсор мыши и нажмите кнопку "Активировать". Или выберите чекбокс и в выпадающем списке действия выберите "Активировать". Нажмите применить.
 
 
-<h3 style="text-align: center;">Обновление:</h3>
+<h2 style="text-align:center;color:#26901b;font-weight:bold;">Обновление:</h2>
 Дополнение поддерживает <a href="https://codeseller.ru/avtomaticheskie-obnovleniya-dopolnenij-plagina-wp-recall/" target="_blank">автоматическое обновление</a> - два раза в день отправляются вашим сервером запросы на обновление.
 Если в течении суток вы не видите обновления (а на странице дополнения вы видите что версия вышла новая), советую ознакомиться с этой <a href="https://codeseller.ru/post-group/rabota-wordpress-krona-cron-prinuditelnoe-vypolnenie-kron-zadach-dlya-wp-recall/" target="_blank">статьёй</a>
 
@@ -15,6 +15,9 @@
 
 
 == Настройки ==
+
+<h3 style="color:#26901b;font-weight:bold;">Общие настройки:</h3>
+
 В админке имеется блок настроек: "WP-Recall" -> "Настройки" -> "Настройки Friends Recall"
 
 Если вы используете базовое дополнение FEED - то возможно "Подписывать при отказе в дружбе" и "Подписывать при удалении из друзей"
@@ -23,10 +26,16 @@
 
 И опция "Включать уведомления сайта"
 
-<hr>
+<hr style="border:1px solid #ddd;margin:18px;">
 
-<h3>Шорткод</h3>
-Имеется шорткод <code>[frnd_online]</code> - "друзья в сети"
+
+
+<h3 style="color:#26901b;font-weight:bold;">Шорткод</h3>
+Имеется шорткод 
+```
+[frnd_online]
+```
+ - "друзья в сети"
 - выводит друзей, которые были активны на сайте в течении последних 10-ти минут (активность WP-Recall). 
 Сортировка по времени активности. Максимум 10-ть друзей.
 
@@ -38,13 +47,15 @@
 <strong>number</strong> - предельное кол-во к выводу. Число. По умолчанию 10
 
 Пример:
-<code>[frnd_online guest-text="Войдите на сайт и добавьте в друзья" not-online="Никого нет" not-friends="Добавьте кого-нибудь в друзья"]</code>
+```
+[frnd_online guest-text="Войдите на сайт и добавьте в друзья" not-online="Никого нет" not-friends="Добавьте кого-нибудь в друзья"]
+```
 
 
 
 
 == F.A.Q. ==
-<h3>Как добавить в друзья?</h3>
+<h3 style="color:#26901b;font-weight:bold;">Как добавить в друзья?</h3>
 
 <strong>2 варианта:</strong>
 
@@ -53,9 +64,10 @@
 
 2. В отдельной записи публикации. Если выводится WP-Recall блок "Об авторе" - то прям в нем доступна кнопка "Добавить в друзья"
 
+<hr style="border:1px solid #ddd;margin:18px;">
 
 
-<h3>Как принять запрос на дружбу?</h3>
+<h3 style="color:#26901b;font-weight:bold;">Как принять запрос на дружбу?</h3>
 
 1. Приходит письмо с уведомлением о новом запросе дружбы. Переходим по ссылке и нажимаем кнопку "Принять запрос в друзья"
 
@@ -65,23 +77,26 @@
 
 4. Мы в личном кабинете того, кто отправил запрос. Кнопка под именем "Принять запрос в друзья"
 
+<hr style="border:1px solid #ddd;margin:18px;">
 
 
-<h3>Могу отклонить дружбу?</h3>
+<h3 style="color:#26901b;font-weight:bold;">Могу отклонить дружбу?</h3>
 
 - да. Пункт выше. Кнопка называется "Отклонить запрос в друзья".
 
+<hr style="border:1px solid #ddd;margin:18px;">
 
 
-<h3>Как удалить из друзей?</h3>
+<h3 style="color:#26901b;font-weight:bold;">Как удалить из друзей?</h3>
 
 Переходим в свой личный кабинет. 
 Нажимаем на вкладку со счетчиком друзей (область счетчиков). 
 В списке своих друзей нажимаем на кнопку "Убрать из друзей"
 
+<hr style="border:1px solid #ddd;margin:18px;">
 
 
-<h3>С какими дополнениями WP-Recall он интегрирован?</h3>
+<h3 style="color:#26901b;font-weight:bold;">С какими дополнениями WP-Recall он интегрирован?</h3>
 
 1. Базовое дополнение <a href="https://codeseller.ru/products/feed-recall-dopolnenie-wp-recall-dlya-formirovaniya-feed-lenty-novostej-polzovatelya/">Feed</a>. Возможно подписывать пользователя при отказе дружбы и при удалении из друзей.
 2. Дополнение <a href="https://codeseller.ru/products/rcl-notification-spisok-uvedomlenij-polzovatelya-v-lichnom-kabinete/" target="_blank">Rcl-Notification</a> - о новом запросе в друзья пользователь узнает через его сообщение на сайте. 
@@ -124,6 +139,12 @@
 
 
 == Changelog ==
+= 2020-03-25 =
+v2.1.1
+* Корректировки вывода кнопок фида в ЛК Theme Control v2.0
+* Небольшие оптимизации css
+
+
 = 2020-01-16 =
 v2.1.0
 * Работа с WP-Recall версии 16.18.0

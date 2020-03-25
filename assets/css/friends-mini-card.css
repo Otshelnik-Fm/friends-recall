@@ -2,20 +2,21 @@
     border: 1px solid #e2e2e2;
     box-shadow: none;
     float: left;
-    margin: 6px 0.5%;
-    min-width: 150px;
+    margin: 6px .5%;
+    min-width: 160px;
     padding: 6px;
-    transition: all 0.3s ease-out;
+    transition: all .3s ease-out;
     width: 13%;
 }
 .userlist.frnd-mini-card-list .user-single:hover {
     border-color: #2986AE;
-    box-shadow: 6px 6px 12px -6px #aaa,0 0 2px 1px rgba(0, 0, 0, 0.1);
+    box-shadow: 6px 6px 12px -6px #aaa,0 0 2px 1px rgba(0, 0, 0, .1);
 }
 .userlist.frnd-mini-card-list .thumb-user {
     width:100%
 }
 .frnd_bottom {
+    box-sizing: border-box;
     display: flex;
     flex-wrap: wrap;
     padding: 6px 3px 0;

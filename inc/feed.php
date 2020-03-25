@@ -66,6 +66,11 @@ function frnd_del_feed_bttn() {
 
     if ( in_array( $relations[0]['status'], [ 1, 2, 4 ] ) ) {
         remove_action( 'init', 'rcl_add_block_feed_button' );
+
+        // в ЛК theme-control на другом хуке висит
+        if ( rcl_exist_addon( 'theme-control' ) ) {
+            remove_action( 'tcl_after_actions', 'tcl_feed_actions_button', 200 );
+        }
     }
 }
 

@@ -130,7 +130,11 @@ final class FriendsRecall {
             }
 
             add_action( 'rcl_enqueue_scripts', array( $this, 'load_template_style' ) );
-            add_action( 'rcl_enqueue_scripts', array( $this, 'load_core_style' ) );
+
+            // в theme-control не требуется
+            if ( ! rcl_exist_addon( 'theme-control' ) ) {
+                add_action( 'rcl_enqueue_scripts', array( $this, 'load_core_style' ) );
+            }
         }
     }
 

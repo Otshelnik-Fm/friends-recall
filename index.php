@@ -206,7 +206,10 @@ function frnd_get_buttons( $status, $user_id, $to_user ) {
 
 // в блок автора
 function frnd_button_in_notice_box( $user_id, $to_user ) {
-    frnd_base()->load_core_style();
+    // в theme-control не требуется
+    if ( ! rcl_exist_addon( 'theme-control' ) ) {
+        frnd_base()->load_core_style();
+    }
 
     $text = frnd_get_friend_request_message( $user_id, $to_user );
 
@@ -241,7 +244,7 @@ function frnd_offer_friendship_button( $user_id, $to_user ) {
         'to_user' => $to_user
         ] );
 
-    return '<div class="frnd_offer">'
+    return '<div class="frnd_offer rcl-tab-button">'
         . rcl_get_button( 'Добавить в друзья', '#', array( 'icon' => 'fa-user-plus', 'attr' => 'data-frnd_request=' . $data . ' onclick="frnd_offer(this);return false;" ' ) )
         . '</div>';
 }
@@ -296,7 +299,7 @@ function frnd_delete_friendship_button( $user_id, $to_user ) {
 
 // ожидаем подтверждения. заявка подана
 function frnd_pending_friendship() {
-    echo '<span class="frnd_pending"><a href="#" class="recall-button frnd_disabled"><i class="rcli fa-clock-o"></i><span>Заявка ожидает рассмотрения</span></a></span>';
+    echo '<span class="frnd_pending rcl-tab-button"><a href="#" class="recall-button frnd_disabled"><i class="rcli fa-clock-o"></i><span>Заявка ожидает рассмотрения</span></a></span>';
 }
 
 // в друзьях - убрать из друзей

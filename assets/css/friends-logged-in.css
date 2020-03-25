@@ -8,7 +8,7 @@
 #frnd_mess_box > div {
     background-color: #fff;
     border-left: 3px solid orange;
-    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.1), 9px 9px 12px -6px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, .1), 9px 9px 12px -6px rgba(0, 0, 0, .2);
     color: #8f0000;
     display: inline-block;
     line-height: normal;
@@ -27,8 +27,9 @@
     padding: 0 6px 0 0;
 }
 .frnd_pending .recall-button.frnd_disabled {
+    background-color: #b8860b !important;
+    color: #fff !important;
     pointer-events: none;
-    background-color: #b8860b;
 }
 
 /*modal*/
