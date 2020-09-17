@@ -40,7 +40,7 @@ function frnd_offer_form( $datas ) {
         [
             'type'        => 'textarea',
             'slug'        => 'frnd_message',
-            'placeholder' => 'Можете написать, как вы познакомились'
+            'placeholder' => 'Можете написать, как вы познакомились...'
         ],
         [
             'type'  => 'hidden',
@@ -70,7 +70,7 @@ function frnd_save_offer_form() {
 
     $from = ( int ) $datas->user_id;
     $to   = ( int ) $datas->to_user;
-    $mess = sanitize_text_field( $_POST['frnd_message'] );
+    $mess = sanitize_textarea_field( $_POST['frnd_message'] );
 
     if ( ( int ) $user_ID === $from ) {
         // получим еще раз статус, возможно race condition

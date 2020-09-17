@@ -1,7 +1,7 @@
 .userlist.frnd-ava-list .user-single {
     float: left;
     margin: 6px .5%;
-    min-width: 150px;
+    min-width: 160px;
     padding: 6px;
     width: 13%;
 }
@@ -12,14 +12,9 @@
     width:100%
 }
 .frnd-ava-list .frnd_delete {
-    display: flex;
+    font-size: 13px !important;
+    margin: 3px 0 0 !important;
     width: 100%;
-}
-.frnd-ava-list .frnd_delete > a {
-    display: flex;
-    justify-content: center;
-    height: 100%;
-    margin: 3px 0 0;
 }
 @media screen and (max-width:480px) {
     .userlist.frnd-ava-list .user-single {

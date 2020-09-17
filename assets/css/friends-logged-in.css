@@ -1,35 +1,18 @@
-.frnd_link {
-    cursor: pointer;
-}
-.frnd_disabled {
-    pointer-events: none;
-    text-decoration: line-through;
-}
-#frnd_mess_box > div {
-    background-color: #fff;
-    border-left: 3px solid orange;
-    box-shadow: 0 -1px 2px rgba(0, 0, 0, .1), 9px 9px 12px -6px rgba(0, 0, 0, .2);
-    color: #8f0000;
-    display: inline-block;
-    line-height: normal;
-    margin: 12px 6px;
-    padding: 6px 12px;
+.frnd_auth_title {
+    margin: 0 0 12px;
 }
 .frnd_title {
-    color: #2e8b57;
-    font-size: 16px;
-    font-weight: bold;
-    margin: 0 0 6px;
+    font-weight: 500;
+    margin: 6px 0 0;
+    font-size: 18px;
 }
-.userlist.rows-list .userlist_cntr .user-content-rcl .frnd_pending,
-.userlist.rows-list .userlist_cntr .user-content-rcl .frnd_actions_bttn {
-    display: inline-flex;
-    padding: 0 6px 0 0;
+.frnd_mess {
+    box-shadow: 9px 9px 12px -6px rgba(0, 0, 0, .2);
+    display: inline-block;
+    min-width: 250px;
 }
-.frnd_pending .recall-button.frnd_disabled {
-    background-color: #b8860b !important;
-    color: #fff !important;
-    pointer-events: none;
+.frnd_mess .rcl-notice__text {
+    margin: 0 0 0 18px;
 }
 
 /*modal*/
@@ -60,31 +43,25 @@
     padding: 6px 12px 0;
 }
 .frnd_modal div.submit-box {
-    background-color: transparent;
     padding: 0;
-    width: 100%;
+    overflow: visible;
 }
-#field-frnd_smls {
-    margin-top: -6px;
+.frnd_modal div.submit-box .rcl-bttn {
+    margin: 0;
 }
-#field-frnd_smls .rcl-smiles {
+#rcl-field-frnd_smls {
+    margin: 12px 0 0 0;
+}
+#rcl-field-frnd_smls .rcl-smiles {
     justify-content: flex-start;
 }
-#field-frnd_smls .smiles {
-    height: 162px;
+#rcl-field-frnd_smls .fa-smile-o {
+    font-size: 30px;
+}
+#rcl-field-frnd_smls .smiles {
+    height: 178px;
+    min-width: 280px;
 }
 .frnd_modal .rcl-field-input textarea:focus {
     border-color: #9ed0e1 !important;
-}
-/*END*/
-#block_author-rcl .frnd_offer {
-    display: inline-block;
-}
-#block_author-rcl .frnd_actions_bttn > a {
-    margin: 0;
-}
-.frnd_subtitle {
-    font-size: 16px;
-    font-weight: bold;
-    margin: 18px 6px 0;
 }

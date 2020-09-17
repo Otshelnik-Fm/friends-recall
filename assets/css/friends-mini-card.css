@@ -1,5 +1,5 @@
 .userlist.frnd-mini-card-list .user-single {
-    border: 1px solid #e2e2e2;
+    border: 1px solid #ddd;
     box-shadow: none;
     float: left;
     margin: 6px .5%;
@@ -9,9 +9,10 @@
     width: 13%;
 }
 .userlist.frnd-mini-card-list .user-single:hover {
-    border-color: #2986AE;
-    box-shadow: 6px 6px 12px -6px #aaa,0 0 2px 1px rgba(0, 0, 0, .1);
+    border-color: var(--rclHex);
+    box-shadow: 6px 6px 12px -6px #aaa;
 }
+.userlist.frnd-mini-card-list .thumb-user a,
 .userlist.frnd-mini-card-list .thumb-user {
     width:100%
 }
@@ -19,7 +20,7 @@
     box-sizing: border-box;
     display: flex;
     flex-wrap: wrap;
-    padding: 6px 3px 0;
+    padding: 6px 3px 3px;
     width: 100%;
 }
 .frnd_bottom > div {
@@ -28,30 +29,24 @@
     width: 100%;
 }
 .frnd_bottom + .frnd_actions_bttn {
-    margin-top: 6px;
-}
-.frnd-mini-card-list .frnd_actions_bttn {
-    border-top: 1px solid #e2e2e2;
-    display: flex;
-    padding: 6px 0 0;
+    margin: 6px 0 0 !important;
+    font-size: 13px !important;
+    justify-content: center;
     width: 100%;
 }
-.frnd-mini-card-list .user-single:hover .frnd_actions_bttn {
-    border-top-color: orange;
+.frnd-mini-card-list .frnd_actions_bttn::before {
+    width: 45%;
+    content: "";
+    position: absolute;
+    top: -6px;
+    height: 1px;
+    transition: all .5s ease;
 }
-.userlist.frnd-mini-card-list .frnd_actions_bttn > a {
-    color: #fff;
-    display: flex;
-    height: 100%;
-    justify-content: center;
-    margin: 0;
+.frnd-mini-card-list .user-single:hover .frnd_actions_bttn::before {
+    background: red;
+    width: 100%;
 }
 @media screen and (max-width:480px) {
-    .userlist.frnd-mini-card-list {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
     .userlist.frnd-mini-card-list .user-single {
         width: 49%;
     }

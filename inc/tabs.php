@@ -158,8 +158,11 @@ function frnd_all_friends_tab( $count ) {
     } else {
         $datas = '';
         if ( rcl_is_office( $user_ID ) ) {
+            $user_link = '<br>Выбирайте друзей из <a href="' . get_permalink( rcl_get_option( 'users_page_rcl' ) ) . '">списка пользователей</a>.';
+            $userlist  = rcl_get_option( 'users_page_rcl' ) ? $user_link : '';
+
             $data = [
-                'text' => 'У вас пока нет друзей'
+                'text' => 'У вас пока нет друзей.' . $userlist
             ];
 
             $datas = apply_filters( 'frnd_you_not_friends', $data );
@@ -275,9 +278,8 @@ function frnd_query_inc_friend_userlist( $query ) {
 function frnd_get_confirm_offer_friends() {
     global $rcl_user, $user_ID;
 
-    echo frnd_confirm_offer_friendship_button( $user_ID, $rcl_user->ID );
-
     echo frnd_reject_offer_friendship_button( $user_ID, $rcl_user->ID );
+    echo frnd_confirm_offer_friendship_button( $user_ID, $rcl_user->ID );
 }
 
 function frnd_get_delete_friend() {
@@ -294,10 +296,14 @@ function frnd_get_messages() {
     if ( ! $messages )
         return;
 
-    $title   = '<div class="frnd_title">Сообщение к заявке:</div>';
-    $message = '<div class="frnd_mess">' . $messages . '</div>';
+    $conf = [
+        'type'  => 'simple', // info,success,warning,error,simple
+        'class' => 'frnd_mess',
+        'text'  => $messages,
+        'icon'  => 'fa-bullhorn',
+    ];
 
-    return '<div id="frnd_mess_box" class="frnd_mess_block"><div>' . $title . $message . '</div></div>';
+    return '<div id="frnd_mess_box" class="frnd_mess_block"><div>' . rcl_get_notice( $conf ) . '</div></div>';
 }
 
 // получаю текст сообщения

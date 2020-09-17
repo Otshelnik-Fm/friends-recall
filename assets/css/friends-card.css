@@ -67,16 +67,8 @@
     text-align: center;
     width: 100%;
 }
-.frnd-card-list .frnd_delete {
-    display: flex;
-    width: 100%;
-}
-.frnd-card-list .frnd_delete > a {
-    display: flex;
-    justify-content: center;
-    height: 100%;
+.userlist.frnd-card-list .rcl-bttn.frnd_actions_bttn {
     margin: 3px 0 0;
-    padding: 6px;
 }
 @media screen and (max-width:480px) {
     .userlist.frnd-card-list .thumb-user {

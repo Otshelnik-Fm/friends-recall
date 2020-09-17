@@ -187,7 +187,7 @@ function frnd_get_friend_request_message( $user_id, $friend ) {
             . "WHERE (from_id,to_id) IN (('%d','%d'),('%d','%d'))", $user_id, $friend, $friend, $user_id
         ) );
 
-    return esc_html( $mess );
+    return nl2br( $mess );
 }
 
 /**

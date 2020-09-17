@@ -319,14 +319,6 @@ function frnd_get_status_friendship_author_to_current_user( $type = 'code' ) {
     }
 }
 
-// при удалении пользователя - очистим
-add_action( 'delete_user', 'frnd_delete_user' );
-function frnd_delete_user( $user_id ) {
-    frnd_del_all_messages_by_user_id( $user_id );
-
-    frnd_del_all_friendships_by_user_id( $user_id );
-}
-
 /**
  * склонения "друг, друга, друзей"
  *
@@ -389,23 +381,37 @@ function frnd_get_author_name( $user_id ) {
 }
 
 /**
- * если это друг - в его ЛК добавим в body доп класс
+ * получим аватарку
  *
- * @since 2.0
+ * @since 2.2
  *
- * @return string   body class 'frnd_is_friend'.
+ * @param array $data  массив данных.
+ *
+ * @param int $size   размер аватарки.
+ *
+ * @return string     тег <img с аватаркой пользователя
  */
-add_filter( 'body_class', 'frnd_add_body_class_friend' );
-function frnd_add_body_class_friend( $classes ) {
-    if ( ! is_user_logged_in() && ! rcl_is_office() )
-        return $classes;
+function frnd_get_avatar( $data, $size ) {
+    $img = '';
+    if ( $data['meta_value'] ) {
+        $url_img = '';
+        if ( is_numeric( $data['meta_value'] ) ) {
+            $image_attributes = wp_get_attachment_image_src( $data['meta_value'], [ $size, $size ] );
+            $url_img          = $image_attributes[0];
+        } else {
+            $url_img = $data['meta_value'];
+        }
 
-    global $user_ID;
+        $time = ( isset( $data['time_action'] ) ) ? $data['time_action'] : '1';
 
-    // в чужом ЛК
-    if ( ! rcl_is_office( $user_ID ) && frnd_is_friend_office() ) {
-        $classes[] = 'frnd_is_friend';
+        $img .= '<img '
+            . 'class="avatar" '
+            . 'src="' . $url_img . '?ver=' . tag_escape( $time ) . '" '
+            . 'alt="user_' . $data['ID'] . '_avatar" '
+            . 'loading="lazy">';
+    } else {
+        $img .= get_avatar( $data['user_email'], $size );
     }
 
-    return $classes;
+    return $img;
 }

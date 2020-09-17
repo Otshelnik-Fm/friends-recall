@@ -164,8 +164,8 @@ function frnd_manager_friend( $user_id, $to_user ) {
     }
 
     if ( isset( $relations[0] ) && $relations[0]['status'] == 3 && isset( $relations[1] ) && $relations[1]['friend_id'] == $user_id && $relations[1]['status'] == 1 ) {
-        echo frnd_confirm_offer_friendship_button( $user_id, $to_user );
         echo frnd_reject_offer_friendship_button( $user_id, $to_user );
+        echo frnd_confirm_offer_friendship_button( $user_id, $to_user );
 
         return;
     }
@@ -214,25 +214,34 @@ function frnd_button_in_notice_box( $user_id, $to_user ) {
     $text = frnd_get_friend_request_message( $user_id, $to_user );
 
     $mess = '<div class="frnd_auth_mess">';
-    $mess .= '<span>' . frnd_get_author_name( $to_user ) . ' хочет добавить вас в друзья. Вы можете принять запрос или отклонить его, кнопками ниже</span>';
+    $mess .= '<div class="frnd_auth_title">' . frnd_get_author_name( $to_user ) . ' хочет добавить вас в друзья.<br>'
+        . 'Вы можете принять запрос или отклонить его, кнопками ниже:</div>';
 
     if ( $text ) {
+        $conf = [
+            'type'  => 'simple', // info,success,warning,error,simple
+            'class' => 'frnd_mess',
+            'text'  => $text,
+            'icon'  => 'fa-bullhorn',
+        ];
+
         $mess .= '<div id="frnd_mess_box" class="frnd_mess_block">'
-            . '<div>'
             . '<div class="frnd_title">Он оставил вам сообщение:</div>'
-            . '<div class="frnd_mess">' . $text . '</div>'
-            . '</div>'
+            . rcl_get_notice( $conf )
             . '</div>';
     }
-    $mess .= frnd_confirm_offer_friendship_button( $user_id, $to_user );
+
     $mess .= frnd_reject_offer_friendship_button( $user_id, $to_user );
+    $mess .= frnd_confirm_offer_friendship_button( $user_id, $to_user );
     $mess .= '</div>';
 
-    $data = [
-        'type' => 'success',
-        'text' => $mess,
-        'icon' => 'fa-handshake-o',
+    $data         = [
+        'type'  => 'success',
+        'text'  => $mess,
+        'class' => 'frnd_incoming_mess',
     ];
+    $data['icon'] = ( ! $text ) ? 'fa-handshake-o' : '';
+
 
     return rcl_get_notice( $data );
 }
@@ -244,9 +253,15 @@ function frnd_offer_friendship_button( $user_id, $to_user ) {
         'to_user' => $to_user
         ] );
 
-    return '<div class="frnd_offer rcl-tab-button">'
-        . rcl_get_button( 'Добавить в друзья', '#', array( 'icon' => 'fa-user-plus', 'attr' => 'data-frnd_request=' . $data . ' onclick="frnd_offer(this);return false;" ' ) )
-        . '</div>';
+    $args = [
+        'label'   => 'Добавить в друзья',
+        'icon'    => 'fa-user-plus',
+        'href'    => '#',
+        'onclick' => 'frnd_offer(this);return false;',
+        'data'    => [ 'frnd_request' => $data ]
+    ];
+
+    return rcl_get_button( $args );
 }
 
 // Кнопка - подтверждаю дружбу
@@ -258,11 +273,15 @@ function frnd_confirm_offer_friendship_button( $user_id, $to_user ) {
         ] );
 
     $args = [
-        'icon' => 'fa-user-plus',
-        'attr' => 'data-frnd_data=' . $data . ' data-frnd_type="confirm" onclick="frnd_operations(this);return false;"'
+        'label'   => 'Принять запрос в друзья',
+        'icon'    => 'fa-user-plus',
+        'href'    => '#',
+        'class'   => 'frnd_actions_bttn frnd_offer_confirm',
+        'onclick' => 'frnd_operations(this);return false;',
+        'data'    => [ 'frnd_data' => $data, 'frnd_type' => "confirm" ]
     ];
 
-    return '<span class="frnd_actions_bttn frnd_offer_confirm">' . rcl_get_button( 'Принять запрос в друзья', '#', $args ) . '</span>';
+    return rcl_get_button( $args );
 }
 
 // Кнопка - отклоняю дружбу
@@ -274,11 +293,15 @@ function frnd_reject_offer_friendship_button( $user_id, $to_user ) {
         ] );
 
     $args = [
-        'icon' => 'fa-user-times',
-        'attr' => 'data-frnd_data=' . $data . ' data-frnd_type="reject" onclick="frnd_operations(this);return false;"'
+        'label'   => 'Отклонить запрос в друзья',
+        'icon'    => 'fa-user-times',
+        'href'    => '#',
+        'class'   => 'frnd_actions_bttn frnd_offer_reject',
+        'onclick' => 'frnd_operations(this);return false;',
+        'data'    => [ 'frnd_data' => $data, 'frnd_type' => "reject" ]
     ];
 
-    return '<span class="frnd_actions_bttn frnd_offer_reject">' . rcl_get_button( 'Отклонить запрос в друзья', '#', $args ) . '</span>';
+    return rcl_get_button( $args );
 }
 
 // Кнопка - удаляю из друзей
@@ -290,16 +313,31 @@ function frnd_delete_friendship_button( $user_id, $to_user ) {
         ] );
 
     $args = [
-        'icon' => 'fa-user-times',
-        'attr' => 'data-frnd_data=' . $data . ' data-frnd_type="reject" onclick="frnd_operations(this);return false;"'
+        'label'     => 'Убрать из друзей',
+        'icon'      => 'fa-user-times',
+        'href'      => '#',
+        'fullwidth' => 1,
+        'class'     => 'frnd_actions_bttn frnd_delete',
+        'onclick'   => 'frnd_operations(this);return false;',
+        'data'      => [ 'frnd_data' => $data, 'frnd_type' => "reject" ]
     ];
 
-    return '<span class="frnd_actions_bttn frnd_delete">' . rcl_get_button( 'Убрать из друзей', '#', $args ) . '</span>';
+    return rcl_get_button( $args );
 }
 
 // ожидаем подтверждения. заявка подана
 function frnd_pending_friendship() {
-    echo '<span class="frnd_pending rcl-tab-button"><a href="#" class="recall-button frnd_disabled"><i class="rcli fa-clock-o"></i><span>Заявка ожидает рассмотрения</span></a></span>';
+    $args = [
+        'label'      => 'Заявка ожидает рассмотрения',
+        'icon'       => 'fa-clock-o',
+        'icon_align' => 'right',
+        'icon_mask'  => '1',
+        'status'     => 'disabled',
+        'class'      => 'frnd_pending',
+        'style'      => 'background-color:#d5ca78;opacity:.85;color:#000 !important;'
+    ];
+
+    echo rcl_get_button( $args );
 }
 
 // в друзьях - убрать из друзей
@@ -324,9 +362,15 @@ function frnd_incoming_friend_count_box( $user_id ) {
     if ( ! $offer_in )
         return;
 
-    return '<div class="frnd_count">'
-        . '<a class="recall-button rcl-ajax" data-post="' . frnd_ajax_data( 'friends', 'incoming-friends' ) . '" href="?tab=friends&subtab=incoming-friends"><span>Запросы в друзья: ' . $offer_in . '</span></a>'
-        . '</div>';
+    $args = [
+        'label'   => 'Запросы в друзья',
+        'href'    => '?tab=friends&subtab=incoming-friends',
+        'counter' => $offer_in,
+        'class'   => 'frnd_incoming rcl-ajax',
+        'attr'    => 'data-post=' . frnd_ajax_data( 'friends', 'incoming-friends' )
+    ];
+
+    return rcl_get_button( $args );
 }
 
 // формируем для ajax строку в data-post атрибут
@@ -357,4 +401,28 @@ function frnd_add_friends_author_publications() {
         return;
 
     frnd_manager_friend( $user_ID, $rcl_user->ID );
+}
+
+// при удалении пользователя - очистим
+add_action( 'delete_user', 'frnd_delete_user' );
+function frnd_delete_user( $user_id ) {
+    frnd_del_all_messages_by_user_id( $user_id );
+
+    frnd_del_all_friendships_by_user_id( $user_id );
+}
+
+// если это друг - в его ЛК добавим в body доп класс
+add_filter( 'body_class', 'frnd_add_body_class_friend' );
+function frnd_add_body_class_friend( $classes ) {
+    if ( ! is_user_logged_in() && ! rcl_is_office() )
+        return $classes;
+
+    global $user_ID;
+
+    // в чужом ЛК
+    if ( ! rcl_is_office( $user_ID ) && frnd_is_friend_office() ) {
+        $classes[] = 'frnd_is_friend';
+    }
+
+    return $classes;
 }
