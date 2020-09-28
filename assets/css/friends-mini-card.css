@@ -34,7 +34,7 @@
     justify-content: center;
     width: 100%;
 }
-.frnd-mini-card-list .frnd_actions_bttn::before {
+.frnd-mini-card-list .frnd_actions_bttn:not(.rcl-bttn__loading)::before {
     width: 45%;
     content: "";
     position: absolute;
@@ -42,7 +42,7 @@
     height: 1px;
     transition: all .5s ease;
 }
-.frnd-mini-card-list .user-single:hover .frnd_actions_bttn::before {
+.frnd-mini-card-list .user-single:hover .frnd_actions_bttn:not(.rcl-bttn__loading)::before {
     background: red;
     width: 100%;
 }
