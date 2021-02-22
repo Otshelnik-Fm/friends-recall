@@ -395,6 +395,11 @@ function frnd_add_friends_author_publications() {
     if ( rcl_is_office() || is_singular( 'page' ) )
         return;
 
+    // В группе кнопка "в друзья" в заявках и списке юзеров не нужна
+    global $rcl_group;
+    if ( $rcl_group )
+        return;
+
     global $user_ID, $rcl_user;
 
     if ( ( int ) $rcl_user->ID === ( int ) $user_ID )
