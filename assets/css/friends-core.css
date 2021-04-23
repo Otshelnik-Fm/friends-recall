@@ -8,7 +8,7 @@
 :not(.cab_bttn_lite) > #tab-button-friends i {
     flex-shrink: 0;
 }
-:not(.cab_bttn_lite) > #tab-button-friends > a > span {
+#rcl-office:not(.office-clear-sky) :not(.cab_bttn_lite) > #tab-button-friends > a > span {
     align-items: center;
     display: flex;
     justify-content: space-between;
