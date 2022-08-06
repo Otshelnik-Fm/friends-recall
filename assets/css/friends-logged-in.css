@@ -1,67 +1,55 @@
 .frnd_auth_title {
     margin: 0 0 12px;
 }
+
 .frnd_title {
+    font-size: 18px;
     font-weight: 500;
     margin: 6px 0 0;
-    font-size: 18px;
 }
+
 .frnd_mess {
     box-shadow: 9px 9px 12px -6px rgba(0, 0, 0, .2);
     display: inline-block;
     min-width: 250px;
 }
+
 .frnd_mess .rcl-notice__text {
     margin: 0 0 0 18px;
 }
 
+.office-webx #tab-button-friends span span {
+    padding-left: 6px;
+}
+
 /*modal*/
-.frnd_modal #ssi-modalWindow {
-    border-radius: 2px;
-}
-.frnd_modal #ssi-modalTitle {
-    border-bottom-color: transparent;
-    padding: 12px 18px;
-}
-.frnd_modal .ssi-topIcons {
-    top: 4px;
-}
-.frnd_modal .ssi-closeIcon::before {
-    content: "×";
-    font-size: 46px;
-    color: #d41111;
-    opacity: .6;
-}
-.frnd_modal .ssi-closeIcon:hover::before {
-    opacity: 1;
-}
-.frnd_modal .ssi-closeIcon::after {
-    content: "";
-    display: none;
-}
-.frnd_modal .ssi-modalContent {
-    padding: 6px 12px 0;
-}
 .frnd_modal div.submit-box {
-    padding: 0;
+    background: none;
     overflow: visible;
+    padding: 7px 0 0;
 }
+
 .frnd_modal div.submit-box .rcl-bttn {
     margin: 0;
 }
+
 #rcl-field-frnd_smls {
     margin: 12px 0 0 0;
 }
+
 #rcl-field-frnd_smls .rcl-smiles {
     justify-content: flex-start;
 }
+
 #rcl-field-frnd_smls .fa-smile-o {
     font-size: 30px;
 }
+
 #rcl-field-frnd_smls .smiles {
-    height: 178px;
+    height: 140px;
     min-width: 280px;
 }
+
 .frnd_modal .rcl-field-input textarea:focus {
     border-color: #9ed0e1 !important;
 }

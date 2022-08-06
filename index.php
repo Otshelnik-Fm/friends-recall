@@ -76,6 +76,7 @@ if ( function_exists( 'rcl_insert_feed_data' ) ) {
 /**/
 
 // вкладка Добавить в друзья сверху ЛК
+add_action( 'webx_area_center', 'frnd_get_actions_cabinet', 51 );
 add_action( 'rcl_area_actions', 'frnd_get_actions_cabinet', 51 );
 function frnd_get_actions_cabinet() {
     if ( ! is_user_logged_in() )
